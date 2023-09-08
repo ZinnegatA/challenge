@@ -2,7 +2,7 @@
 
 Project is aimed at creating challenges and leaderboard for participants, it is integrated with Codewars (https://www.codewars.com) via open api.
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.1.
+Deployed app: https://js-challenge-leaderboard.netlify.app/
 
 ## Development server
 
