@@ -2,31 +2,31 @@
   {
     "nickname": "dimitiros",
     "name": "Dmitrii Khristoforidi",
-    "prevPoints": 100
+    "runsPoints": [10, 85]
   },
   {
     "nickname": "jcdenton23",
     "name": "Alisher Tashbulatov",
-    "prevPoints": 50
+    "runsPoints": [50, 70]
   },
   {
     "nickname": "ilyasyzv",
     "name": "Ilias Iangurazov",
-    "prevPoints": 50
+    "runsPoints": [55, 75]
   },
   {
     "nickname": "grayhat7",
     "name": "Asel Sultanova",
-    "prevPoints": 35
+    "runsPoints": [45, 25]
   },
   {
     "nickname": "temirlanamangaliyev",
     "name": "Temirlan Amangaliyev",
-    "prevPoints": 25
+    "runsPoints": [25, 0]
   },
   {
     "nickname": "kate_89",
     "name": "Yekaterina Zhunusbayeva",
-    "prevPoints": 10
+    "runsPoints": [0, 35]
   }
 ]

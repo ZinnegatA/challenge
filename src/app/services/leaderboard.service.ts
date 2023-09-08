@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {Task, TaskList} from "../models/task.model";
+import {Run, Task, TaskList} from "../models/task.model";
 import {User} from "../models/user.model";
 
 @Injectable({
@@ -23,8 +23,8 @@ export class LeaderboardService {
     return this.http.get<User[]>(`${this.dataURL}/users.json`);
   }
 
-  getTasks(): Observable<Task[]> {
-    return this.http.get<Task[]>(`${this.dataURL}/tasks.json`);
+  getTasks(): Observable<Run[]> {
+    return this.http.get<Run[]>(`${this.dataURL}/tasks.json`);
   }
 
   getTasksInfoByUserData(taskList: TaskList, tasks: Task[]): Task[] {

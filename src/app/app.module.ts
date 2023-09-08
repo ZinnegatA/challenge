@@ -9,12 +9,14 @@ import {FormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { LoaderComponent } from './loader/loader.component';
+import { DropdownComponent } from './dropdown/dropdown.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     RowComponent,
-    LoaderComponent
+    LoaderComponent,
+    DropdownComponent
   ],
   imports: [
     BrowserModule,

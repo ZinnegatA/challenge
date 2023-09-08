@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {LeaderboardService} from "../services/leaderboard.service";
-import {Task, TaskList} from "../models/task.model";
+import {Run, Task, TaskList} from "../models/task.model";
 import {User} from "../models/user.model";
 
 @Component({
@@ -10,8 +10,8 @@ import {User} from "../models/user.model";
 })
 export class RowComponent implements OnInit {
   public isLoading: boolean;
-  public startRunDate: Date = new Date('2023-01-26T06:09:37.402Z');
-  public tasks: Task[] = [];
+  public runs: Run[] = [];
+  public currentRun: Run;
   public allUsers: User[] = [];
   public users: User[] = [];
   public userNames: string = 'dimitiros;jcdenton23;ilyasyzv;grayhat7;Crepiks;' +
@@ -24,8 +24,19 @@ export class RowComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.leaderboardService.getTasks().subscribe(res => this.tasks = res);
-    this.leaderboardService.getUsers().subscribe(res => this.allUsers = res);
+    this.leaderboardService.getTasks().subscribe((res: Run []) => {
+      if (res && res.length > 0) {
+        this.runs = res;
+        this.currentRun = res[res.length - 1];
+        // TODO: add validation on dates: endDate and completedAt, put it as unsolved task
+      }
+    });
+    this.leaderboardService.getUsers().subscribe((res: User[]) => this.allUsers = res);
+  }
+
+  public changeRun(run: Run) {
+    this.currentRun = run;
+    this.addUsers();
   }
 
   public showAll() {
@@ -62,24 +73,36 @@ export class RowComponent implements OnInit {
   }
 
   private handleTaskList(nickname: string, taskList: TaskList) {
-    const tasks = this.leaderboardService.getTasksInfoByUserData(taskList, this.tasks);
+    const tasks = this.leaderboardService.getTasksInfoByUserData(taskList, this.currentRun.tasks);
     const total: number = tasks.map(task => task.points ? task.points : 0)
       .reduce((partialSum, a) => partialSum + a, 0);
     const user = this.allUsers.filter(user => user.nickname === nickname);
     if (user?.length > 0) {
-      this.users.push({...user[0], tasks, total: total + user[0].prevPoints, place: 1});
+      const prevPoints = this.prevPoints(user[0].runsPoints);
+      this.users.push({...user[0], tasks, prevPoints, total: total + prevPoints, place: 1});
     } else {
-      this.users.push({name: nickname, nickname, tasks, prevPoints: 0, total, place: 1});
+      this.users.push({name: nickname, nickname, tasks, prevPoints: 0, runsPoints: [], total, place: 1});
     }
     this.sortLeaderboard();
   }
 
+  private prevPoints(runsPoints: number[]): number {
+    let sum = 0;
+    runsPoints.forEach((el: number, i: number) => {
+      if (i + 1 > this.currentRun.index) {
+        return;
+      }
+      sum += el;
+    });
+    return sum;
+  }
+
   private sortLeaderboard() {
     if (this.users.length === this.usersCount) {
+      this.findFastestSolution();
       this.users.sort((user1: User, user2: User) => {
         return user2.total - user1.total;
       });
-      this.findFastestSolution();
       this.setPlacesForUsers();
     }
   }
@@ -96,12 +119,13 @@ export class RowComponent implements OnInit {
   }
 
   private findFastestSolution() {
-    for (const task of this.tasks) {
+    for (const task of this.currentRun.tasks) {
       let earliest: Date | null | undefined = null;
       let currentUser: User | null | undefined = null;
       for (const user of this.users) {
         let completedAt = user.tasks.filter(t => t.id === task.id).map(t => t.completedAt)[0];
-        if (completedAt && (!earliest || earliest > new Date(completedAt)) && new Date(completedAt) > this.startRunDate) {
+        if (completedAt && (!earliest || earliest > new Date(completedAt)) &&
+          new Date(completedAt) > new Date(this.currentRun.startDate)) {
           earliest = new Date(completedAt);
           currentUser = user;
         }

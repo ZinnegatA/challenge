@@ -4,7 +4,8 @@ export interface User {
   name: string;
   nickname: string;
   tasks: Task[];
-  prevPoints: number;
+  runsPoints: number[];
+  prevPoints?: number;
   total: number;
   place?: number;
 }
