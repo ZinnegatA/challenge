@@ -1,0 +1,27 @@
+[
+  {
+    "id": "566efcfbf521a3cfd2000056",
+    "name": "Reversing Fun",
+    "points": 5
+  },
+  {
+    "id": "51b6249c4612257ac0000005",
+    "name": "Roman Numerals Decoder",
+    "points": 10
+  },
+  {
+    "id": "525f3eda17c7cd9f9e000b39",
+    "name": "Calculating with Functions",
+    "points": 15
+  },
+  {
+    "id": "58feb9c16dcb746414000099",
+    "name": "Simple Fun #209: Largest Room Area",
+    "points": 20
+  },
+  {
+    "id": "5296bc77afba8baa690002d7",
+    "name": "Sudoku Solver",
+    "points": 25
+  }
+]

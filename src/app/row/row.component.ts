@@ -1,0 +1,122 @@
+import {Component, OnInit} from '@angular/core';
+import {LeaderboardService} from "../services/leaderboard.service";
+import {Task, TaskList} from "../models/task.model";
+import {User} from "../models/user.model";
+
+@Component({
+  selector: 'app-row',
+  templateUrl: './row.component.html',
+  styleUrls: ['./row.component.scss']
+})
+export class RowComponent implements OnInit {
+  public isLoading: boolean;
+  public startRunDate: Date = new Date('2023-01-26T06:09:37.402Z');
+  public tasks: Task[] = [];
+  public allUsers: User[] = [];
+  public users: User[] = [];
+  public userNames: string = 'dimitiros;jcdenton23;ilyasyzv;grayhat7;Crepiks;' +
+    'temirlanamangaliyev;Ernest2077;argyyyn;VKeyPEDIdea;kate_89;Mitchel15;balu9';
+  //whilestevego;Cloud Walker;dfhwze
+  public usersCount: number = 0;
+  public sliceEnd: number = 10;
+
+  constructor(public leaderboardService: LeaderboardService) {
+  }
+
+  ngOnInit() {
+    this.leaderboardService.getTasks().subscribe(res => this.tasks = res);
+    this.leaderboardService.getUsers().subscribe(res => this.allUsers = res);
+  }
+
+  public showAll() {
+    this.sliceEnd = this.usersCount;
+  }
+
+  public addUsers() {
+    this.isLoading = true;
+    this.users = [];
+    const names: string[] = this.userNames.split(';').filter(name => name !== '');
+    this.usersCount = names.length;
+    names.forEach(nickname => {
+      this.getUserTasksData(nickname, 0);
+    });
+  }
+
+  private getUserTasksData(nickname: string, pageNumber: number, tasks?: Task[]) {
+    this.leaderboardService.getUserTasksData(nickname, pageNumber)
+      .subscribe({
+        next: (res: TaskList) => {
+          if (tasks) {
+            res.data.push(...tasks);
+          }
+          if (res.totalPages > pageNumber + 1) {
+            this.getUserTasksData(nickname, pageNumber + 1, res.data);
+          } else {
+            this.handleTaskList(nickname, res);
+          }
+        }, error: (err) => {
+          console.error(err);
+          this.handleTaskList(nickname, {data: [], totalPages: 0, totalItems: 0});
+        }
+      });
+  }
+
+  private handleTaskList(nickname: string, taskList: TaskList) {
+    const tasks = this.leaderboardService.getTasksInfoByUserData(taskList, this.tasks);
+    const total: number = tasks.map(task => task.points ? task.points : 0)
+      .reduce((partialSum, a) => partialSum + a, 0);
+    const user = this.allUsers.filter(user => user.nickname === nickname);
+    if (user?.length > 0) {
+      this.users.push({...user[0], tasks, total: total + user[0].prevPoints, place: 1});
+    } else {
+      this.users.push({name: nickname, nickname, tasks, prevPoints: 0, total, place: 1});
+    }
+    this.sortLeaderboard();
+  }
+
+  private sortLeaderboard() {
+    if (this.users.length === this.usersCount) {
+      this.users.sort((user1: User, user2: User) => {
+        return user2.total - user1.total;
+      });
+      this.findFastestSolution();
+      this.setPlacesForUsers();
+    }
+  }
+
+  private setPlacesForUsers() {
+    this.users.reduce((user1: User, user2: User) => {
+      if (user1.total === user2.total) {
+        user2.place = user1.place;
+      } else {
+        user2.place = user1.place ? user1.place + 1 : 1;
+      }
+      return user2;
+    });
+  }
+
+  private findFastestSolution() {
+    for (const task of this.tasks) {
+      let earliest: Date | null | undefined = null;
+      let currentUser: User | null | undefined = null;
+      for (const user of this.users) {
+        let completedAt = user.tasks.filter(t => t.id === task.id).map(t => t.completedAt)[0];
+        if (completedAt && (!earliest || earliest > new Date(completedAt)) && new Date(completedAt) > this.startRunDate) {
+          earliest = new Date(completedAt);
+          currentUser = user;
+        }
+      }
+      if (currentUser) {
+        currentUser.tasks.forEach(t => {
+          if (t.id === task.id) {
+            t.fastestSolution = true;
+            if (currentUser && currentUser.total) {
+              currentUser.total = currentUser.total + 5;
+            }
+          }
+        })
+      }
+    }
+    this.isLoading = false;
+  }
+}
