@@ -1,17 +1,14 @@
 {
-    "compilerOptions": {
-      "module": "commonjs",
-      "esModuleInterop": true,
-      "target": "es6",
-      "moduleResolution": "node",
-      "sourceMap": true,
-      "outDir": "dist",
-      "emitDecoratorMetadata": true,
-      "experimentalDecorators": true,
-    },
-    "include": [
-      "src/**/*",
-      "orm.config.ts"
-    ],
-    "lib": ["es2017"]
-  }
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "es6",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "../dist",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
+  },
+  "include": ["src/**/*.ts", "orm.config.ts"],
+  "lib": ["es2017"]
+}
