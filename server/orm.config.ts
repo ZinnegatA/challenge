@@ -4,6 +4,7 @@ import { DataSource } from 'typeorm';
 import { User } from './src/entities/User';
 import { Task } from './src/entities/Task';
 import { Run } from './src/entities/Run';
+import { Admin } from './src/entities/Admin';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -14,7 +15,7 @@ export const AppDataSource = new DataSource({
   database: 'challenge',
   synchronize: true,
   logging: false,
-  entities: [User, Task, Run],
+  entities: [User, Task, Run, Admin],
   migrations: [path.join(__dirname, '/src/migrations/**/*{.js,.ts}')],
   subscribers: [path.join(__dirname, '/src/subscribers/**/*{.js,.ts}')],
 });
