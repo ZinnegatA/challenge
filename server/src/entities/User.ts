@@ -19,7 +19,10 @@ export class User {
   photo: string;
 
   @Column()
-  epam_name: string;
+  telescope_link: string;
+
+  @Column()
+  codewars_username: string;
 
   @ManyToMany(() => Task, (task) => task.users)
   @JoinTable()
