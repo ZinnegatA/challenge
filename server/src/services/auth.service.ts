@@ -14,7 +14,7 @@ export class AuthService {
       if (!errors.isEmpty()) {
         const errorMessage = errors.array()[0].msg;
 
-        return res.status(400).json({ message: errorMessage });
+        return res.status(401).json({ message: errorMessage });
       }
 
       const { username, password } = req.body;
@@ -24,13 +24,13 @@ export class AuthService {
       });
 
       if (!admin) {
-        return res.status(404).json({ message: `User ${username} not found` });
+        return res.status(401).json({ message: `User ${username} not found` });
       }
 
       const validPassword = compareSync(password, admin.password);
 
       if (!validPassword) {
-        return res.status(400).json({ message: 'Incorrect password' });
+        return res.status(401).json({ message: 'Incorrect password' });
       }
 
       const token = generateAccessToken(admin.username);
