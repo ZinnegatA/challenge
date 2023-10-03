@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { jwtOptions } from '../config/authConfig';
+import 'dotenv/config';
 
 export const authMiddleware = function (
   req: Request,
@@ -15,14 +15,18 @@ export const authMiddleware = function (
   try {
     const token = req.headers.authorization?.split(' ')[1];
 
-    if (token === undefined) throw new Error();
+    if (!token) throw new Error();
 
-    const decodedData = jwt.verify(token, jwtOptions.secret);
+    const secretKey = process.env.SECRET_KEY;
+
+    if (!secretKey) throw new Error();
+
+    const decodedData = jwt.verify(token, secretKey);
 
     req.user = decodedData;
     next();
   } catch (err) {
     console.log(err);
-    res.status(403).json({ message: 'Authorization failed' });
+    res.status(401).json({ message: 'Authorization failed' });
   }
 };

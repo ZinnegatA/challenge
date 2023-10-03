@@ -2,16 +2,9 @@ import type { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { Admin } from '../entities/Admin';
 import { AppDataSource } from '../../orm.config';
-import { jwtOptions } from '../config/authConfig';
-import jwt from 'jsonwebtoken';
-
-const generateAccessToken = (username: string): string => {
-  const payload = {
-    username,
-  };
-
-  return jwt.sign(payload, jwtOptions.secret, { expiresIn: '24h' });
-};
+import { generateAccessToken } from '../utils/auth.helper';
+import { compareSync } from 'bcrypt';
+import 'dotenv/config';
 
 export class AuthService {
   async adminLogin(req: Request, res: Response): Promise<Response> {
@@ -30,11 +23,13 @@ export class AuthService {
         username,
       });
 
-      if (admin === null || admin === undefined) {
+      if (!admin) {
         return res.status(404).json({ message: `User ${username} not found` });
       }
 
-      if (password !== admin.password) {
+      const validPassword = compareSync(password, admin.password);
+
+      if (!validPassword) {
         return res.status(400).json({ message: 'Incorrect password' });
       }
 
