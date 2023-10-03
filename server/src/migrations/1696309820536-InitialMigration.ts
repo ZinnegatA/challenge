@@ -1,9 +1,12 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
+import { hash } from 'bcrypt';
 
-export class InitialMigration1695800559701 implements MigrationInterface {
-  name = 'InitialMigration1695800559701';
+export class InitialMigration1696309820536 implements MigrationInterface {
+  name = 'InitialMigration1696309820536';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    const adminPassword = await hash('AdminPass', 10);
+
     await queryRunner.query(
       `CREATE TABLE "run" ("id" SERIAL NOT NULL, "run_start_date" TIMESTAMP NOT NULL, "run_end_date" TIMESTAMP NOT NULL, CONSTRAINT "PK_804c38ffba92002c6d2c646dd46" PRIMARY KEY ("id"))`,
     );
@@ -35,7 +38,7 @@ export class InitialMigration1695800559701 implements MigrationInterface {
       `ALTER TABLE "user_tasks_task" ADD CONSTRAINT "FK_9bcb8e9773d79c9874a61f79c3d" FOREIGN KEY ("taskId") REFERENCES "task"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(`
-      INSERT INTO admin (username, password) VALUES ('Admin', 'AdminPass');
+      INSERT INTO admin (username, password) VALUES ('Admin', '${adminPassword}');
     `);
   }
 
