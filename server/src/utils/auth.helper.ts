@@ -5,9 +5,9 @@ export const generateAccessToken = (username: string): string => {
     username,
   };
 
-  const secretKey = process.env.SECRET_KEY;
+  const secretKey = process.env.SECRET_KEY ;
 
-  if (!secretKey) throw new Error();
+  if (!secretKey) throw new Error("Specify secret key");
 
   return jwt.sign(payload, secretKey, { expiresIn: '24h' });
 };
