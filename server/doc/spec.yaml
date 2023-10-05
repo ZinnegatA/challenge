@@ -1,0 +1,49 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: JS Coding challenge
+  description: API for JS coding challenge
+paths:
+ /login:
+    post:
+      summary: Admin Login
+      description: Authenticate a user and return a token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: The username of the user.
+                  example: johndoe
+                password:
+                  type: string
+                  description: The user's password.
+                  example: mypassword
+      responses:
+        '200':
+          description: Authentication completed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Authentication completed
+                  token:
+                    type: string
+                    example: your_jwt_token_here
+        '401':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User johndoe not found
