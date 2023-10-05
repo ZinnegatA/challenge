@@ -8,7 +8,7 @@
     "start": "tsc && nodemon src/app.ts",
     "typeorm:migration:generate": "tsc && typeorm migration:generate src/migrations/Generated -d ../dist/orm.config.js",
     "typeorm:migration:run": "tsc && typeorm migration:run -d ./dist/orm.config.js",
-    "typeorm:migration:revert": "tsc && typ eorm migration:revert -d ./dist/orm.config.js",
+    "typeorm:migration:revert": "tsc && typeorm migration:revert -d ./dist/orm.config.js",
     "typeorm:migration:show": "tsc && typeorm migration:show -d ./dist/orm.config.js",
     "lint": "npx eslint ./src",
     "format": "npx eslint ./src --fix"
