@@ -12,7 +12,7 @@ export const AppDataSource = new DataSource({
   port: 5432,
   username: 'postgres',
   password: 'postgres',
-  database: 'challenge',
+  database: 'js_challenge',
   synchronize: true,
   logging: false,
   entities: [User, Task, Run, Admin],

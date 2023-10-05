@@ -1,10 +1,10 @@
 import type { Request, Response } from 'express';
-import { validationResult } from 'express-validator';
 import { Admin } from '../entities/Admin';
 import { AppDataSource } from '../../orm.config';
 import { generateAccessToken } from '../utils/auth.helper';
 import { compareSync } from 'bcrypt';
 import 'dotenv/config';
+import { validationResult } from 'express-validator';
 
 export class AuthService {
   async adminLogin(req: Request, res: Response): Promise<Response> {
@@ -13,7 +13,7 @@ export class AuthService {
 
       if (!errors.isEmpty()) {
         const errorMessage = errors.array()[0].msg;
-
+    
         return res.status(401).json({ message: errorMessage });
       }
 
