@@ -5,11 +5,13 @@
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc && nodemon src/app.ts",
+    "start:dev": "nodemon src/app.ts",
+    "start": "npm run typeorm:migration:run && NODE_PATH=./dist node dist/src/app.js",
     "typeorm:migration:generate": "tsc && typeorm migration:generate src/migrations/Generated -d ../dist/orm.config.js",
     "typeorm:migration:run": "tsc && typeorm migration:run -d ./dist/orm.config.js",
     "typeorm:migration:revert": "tsc && typeorm migration:revert -d ./dist/orm.config.js",
     "typeorm:migration:show": "tsc && typeorm migration:show -d ./dist/orm.config.js",
+    "build": "tsc",
     "lint": "npx eslint ./src",
     "format": "npx eslint ./src --fix"
   },

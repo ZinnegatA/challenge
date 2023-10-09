@@ -1,0 +1,5 @@
+services:
+  challenge-app:
+    build:
+      target: production
+    command: node dist/src/app.js

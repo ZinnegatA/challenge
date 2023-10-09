@@ -14,7 +14,36 @@ services:
        - challengedb:/data/challenge_postgres
     ports:
       - "5432:5432"
+    networks:
+      - challenge-network
     restart: unless-stopped
+  challenge-app:
+    depends_on:
+        - postgres
+    build:
+      context: .
+      dockerfile: app.dockerfile
+      target: base
+    restart: unless-stopped
+    volumes:
+      - ./src:/home/node/app/src
+    environment:
+      - DB_HOST=postgres
+      - DB_USER=$POSTGRES_USER
+      - DB_PASSWORD=$POSTGRES_PASSWORD
+      - DB_NAME=$POSTGRES_DB
+      - DB_PORT=5432
+    container_name: challenge-app
+    expose:
+      - '3000'
+    ports:
+      - '3000:3000'
+    networks:
+      - challenge-network
+    command: npm run start
 volumes:
     challengedb:
       external: true
+networks:
+  challenge-network:
+    driver: bridge
