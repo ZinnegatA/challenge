@@ -31,10 +31,10 @@ jobs:
       run: |
         sshpass -p ${{ secrets.SERVER_PASSWORD }} scp server/docker-compose.yml user@159.89.1.182:/srv/www/challenge-backend
         sshpass -p ${{ secrets.SERVER_PASSWORD }} ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null user@159.89.1.182 \
-        "cd /srv/www/challenge-backend && docker login -u ${{ secrets.DOCKERHUB_USERNAME }} \
+        "cd /srv/www/challenge-backend && \
         export POSTGRES_USER=${{ secrets.POSTGRES_USER }} POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} POSTGRES_DB=${{ secrets.POSTGRES_DB }} \
         PGDATA=${{ secrets.PGDATA }} SECRET_KEY=${{ secrets.SECRET_KEY }} PG_CONTAINER_NAME=${{ secrets.PG_CONTAINER_NAME }} && \
-        -p ${{ secrets.DOCKERHUB_PASSWORD }} && docker-compose pull && docker-compose up -d"
+        docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }} && docker-compose pull && docker-compose up -d"
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
