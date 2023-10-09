@@ -27,8 +27,8 @@ jobs:
     - name: Build and Push Docker Images
       run: |
         docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-        docker-compose -f docker-compose.yml build
-        docker-compose -f docker-compose.yml push
+        docker-compose -f server/docker-compose.yml build
+        docker-compose -f server/docker-compose.yml push
 
     - name: Deploy to Server
       run: |
