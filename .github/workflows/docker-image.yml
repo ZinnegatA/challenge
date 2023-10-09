@@ -32,6 +32,7 @@ jobs:
 
     - name: Deploy to Server
       run: |
+        sshpass -p ${{ secrets.SERVER_PASSWORD }} scp docker-compose.yml user@159.89.1.182:/srv/www/challenge-backend
         sshpass -p ${{ secrets.SERVER_PASSWORD }} ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null user@159.89.1.182 "cd /srv/www/challenge-backend && docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }} && docker-compose pull && docker-compose up -d"
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
