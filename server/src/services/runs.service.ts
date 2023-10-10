@@ -1,18 +1,12 @@
 import { Request, Response } from 'express';
-import { validationResult } from 'express-validator';
+import { validateRequest } from '../utils/validation.helper';
 import { AppDataSource } from '../../orm.config';
 import { Run } from '../entities/Run';
 
 export class RunsService {
   async createRun(req: Request, res: Response): Promise<Response> {
     try {
-      const errors = validationResult(req);
-
-      if (!errors.isEmpty()) {
-        const errorMessage = errors.array()[0].msg;
-
-        return res.status(400).json({ message: errorMessage });
-      }
+      validateRequest(req, res);
 
       const { runStartDate, runEndDate } = req.body;
 
@@ -30,13 +24,7 @@ export class RunsService {
 
   async updateRun(req: Request, res: Response): Promise<Response> {
     try {
-      const errors = validationResult(req);
-
-      if (!errors.isEmpty()) {
-        const errorMessage = errors.array()[0].msg;
-
-        return res.status(400).json({ message: errorMessage });
-      }
+      validateRequest(req, res);
 
       const { runStartDate, newRunEndDate } = req.body;
 
@@ -69,13 +57,7 @@ export class RunsService {
 
   async getRun(req: Request, res: Response): Promise<Response> {
     try {
-      const errors = validationResult(req);
-
-      if (!errors.isEmpty()) {
-        const errorMessage = errors.array()[0].msg;
-
-        return res.status(400).json({ message: errorMessage });
-      }
+      validateRequest(req, res);
 
       const { runStartDate } = req.body;
 
@@ -96,13 +78,7 @@ export class RunsService {
 
   async deleteRun(req: Request, res: Response): Promise<Response> {
     try {
-      const errors = validationResult(req);
-
-      if (!errors.isEmpty()) {
-        const errorMessage = errors.array()[0].msg;
-
-        return res.status(400).json({ message: errorMessage });
-      }
+      validateRequest(req, res);
 
       const { runStartDate } = req.body;
 
