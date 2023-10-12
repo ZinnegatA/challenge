@@ -34,4 +34,4 @@ jobs:
         "cd /srv/www/challenge-backend && \
         export POSTGRES_USER=${{ secrets.POSTGRES_USER }} POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} POSTGRES_DB=${{ secrets.POSTGRES_DB }} \
         PGDATA=${{ secrets.PGDATA }} SECRET_KEY=${{ secrets.SECRET_KEY }} PG_CONTAINER_NAME=${{ secrets.PG_CONTAINER_NAME }} && \
-        docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }} && docker-compose pull && docker-compose up -d"
+        docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }} && docker-compose pull && docker-compose up -d --verbose"
