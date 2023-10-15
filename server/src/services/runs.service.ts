@@ -52,7 +52,7 @@ export class RunsService {
   async getAllRuns(req: Request, res: Response): Promise<Response> {
     const runs = await AppDataSource.manager.find(Run);
 
-    return res.status(200).json(runs);
+    return res.status(200).json({ runs });
   }
 
   async getRun(req: Request, res: Response): Promise<Response> {
@@ -69,7 +69,7 @@ export class RunsService {
         return res.status(404).json({ message: 'Run not found' });
       }
 
-      return res.status(200).json(runExists);
+      return res.status(200).json({ run: runExists });
     } catch (err) {
       console.log(err);
       return res.status(400).json({ message: 'Error finding run' });
