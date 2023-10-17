@@ -7,15 +7,18 @@ import { Run } from './src/entities/Run';
 import { Admin } from './src/entities/Admin';
 import dotenv from 'dotenv';
 
-dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
+if (!process.env.NODE_ENV){
+  throw new Error('Provide env which matches environment config name')
+}
+dotenv.config({ path: `.${process.env.NODE_ENV}.env` });
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
   host: process.env.DB_HOST ?? 'localhost',
   port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 5432,
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  username: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+  database: process.env.POSTGRES_DB,
   synchronize: true,
   logging: false,
   entities: [User, Task, Run, Admin],

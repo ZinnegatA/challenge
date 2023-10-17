@@ -34,6 +34,8 @@ services:
       - DB_PASSWORD=$POSTGRES_PASSWORD
       - DB_NAME=$POSTGRES_DB
       - DB_PORT=5432
+    env_file:
+      - .env 
     container_name: challenge-app
     expose:
       - '3000'
@@ -47,4 +49,4 @@ volumes:
       external: true
 networks:
   challenge-network:
-    driver: bridge
+    external: true
