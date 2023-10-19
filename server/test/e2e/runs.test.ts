@@ -4,6 +4,7 @@ import {
   closeDatabase,
   initializeDatabase,
 } from '../../src/services/database.service';
+// import { AppDataSource } from '../../orm.config';
 
 describe('POST /api/v1/runs', () => {
   let accessToken: string;
@@ -43,7 +44,7 @@ describe('POST /api/v1/runs', () => {
   });
 });
 
-describe('PUT /api/v1/runs', () => {
+describe('PUT /api/v1/runs/:id', () => {
   let accessToken: string;
 
   beforeAll(async () => {
@@ -62,14 +63,13 @@ describe('PUT /api/v1/runs', () => {
     server.close();
   });
 
-  it('/api/v1/runs should return 404 if the run to update is not found', async () => {
+  it('/api/v1/runs/:id should return 404 if the run to update is not found', async () => {
     const runToUpdate = {
-      runStartDate: '1998-10-10',
-      newRunEndDate: '2001-10-10',
+      newRunEndDate: '2002-10-10',
     };
 
     const response = await request(app)
-      .put('/api/v1/runs')
+      .put('/api/v1/runs/0')
       .set('Authorization', `Bearer ${accessToken}`)
       .send(runToUpdate)
       .expect(404);
@@ -77,14 +77,13 @@ describe('PUT /api/v1/runs', () => {
     expect(response.body).toHaveProperty('message', 'Run not found');
   });
 
-  it('/api/v1/runs should update the end date of an existing run and return 200', async () => {
+  it('/api/v1/runs/:id should update the end date of an existing run and return 200', async () => {
     const runToUpdate = {
-      runStartDate: '2000-10-10',
       newRunEndDate: '2002-10-10',
     };
 
     const response = await request(app)
-      .put('/api/v1/runs')
+      .put('/api/v1/runs/1')
       .set('Authorization', `Bearer ${accessToken}`)
       .send(runToUpdate)
       .expect(200);
@@ -96,7 +95,7 @@ describe('PUT /api/v1/runs', () => {
   });
 });
 
-describe('GET /api/v1/runs and GET /api/v1/run', () => {
+describe('GET /api/v1/runs', () => {
   beforeAll(async () => {
     await initializeDatabase();
   });
@@ -111,22 +110,32 @@ describe('GET /api/v1/runs and GET /api/v1/run', () => {
 
     expect(response.body.runs).toBeDefined();
   });
+});
 
-  it('/api/v1/run should get details of a specific run and return 200', async () => {
-    const runToFind = {
-      runStartDate: '2000-10-10',
-    };
+describe('GET /api/v1/runs/:id', () => {
+  beforeAll(async () => {
+    await initializeDatabase();
+  });
 
-    const response = await request(app)
-      .get('/api/v1/run')
-      .send(runToFind)
-      .expect(200);
+  afterAll(async () => {
+    await closeDatabase();
+    server.close();
+  });
+
+  it('/api/v1/runs/:id should get details of a specific run and return 200', async () => {
+    const response = await request(app).get('/api/v1/runs/1').expect(200);
 
     expect(response.body.run).toBeDefined();
   });
+
+  it('/api/v1/runs/:id should return 404 if the run is not found', async () => {
+    const response = await request(app).get('/api/v1/runs/0').expect(404);
+
+    expect(response.body).toHaveProperty('message', 'Run not found');
+  });
 });
 
-describe('DELETE /api/v1/runs', () => {
+describe('DELETE /api/v1/runs/:id', () => {
   let accessToken: string;
 
   beforeAll(async () => {
@@ -141,33 +150,26 @@ describe('DELETE /api/v1/runs', () => {
   });
 
   afterAll(async () => {
+    // await AppDataSource.query(
+    //   `ALTER SEQUENCE ${entityTableName}_${idColumnName}_seq RESTART WITH 1`,
+    // );
     await closeDatabase();
     server.close();
   });
 
-  it('/api/v1/runs should return 404 if the run to delete is not found', async () => {
-    const runToDelete = {
-      runStartDate: '1998-10-10',
-    };
-
+  it('/api/v1/runs/:id should return 404 if the run to delete is not found', async () => {
     const response = await request(app)
-      .delete('/api/v1/runs')
+      .delete('/api/v1/runs/0')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send(runToDelete)
       .expect(404);
 
     expect(response.body).toHaveProperty('message', 'Run not found');
   });
 
-  it('/api/v1/runs should delete a run and return 204', async () => {
-    const runToDelete = {
-      runStartDate: '2000-10-10',
-    };
-
+  it('/api/v1/runs/:id should delete a run and return 204', async () => {
     await request(app)
-      .delete('/api/v1/runs')
+      .delete('/api/v1/runs/1')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send(runToDelete)
       .expect(204);
   });
 });
