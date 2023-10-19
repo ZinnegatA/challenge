@@ -4,7 +4,7 @@ info:
   title: JS Coding challenge
   description: API for JS coding challenge
 paths:
- /login:
+  /login:
     post:
       summary: Admin Login
       description: Authenticate a user and return a token.
@@ -47,3 +47,208 @@ paths:
                   message:
                     type: string
                     example: User johndoe not found
+/runs:
+  post:
+    summary: Creating a run
+    description: Creating a run if it doesn't exist.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              runStartDate:
+                type: Date
+                description: Start date of a new run.
+                example: 2020-05-11
+              runEndDate:
+                type: Date
+                description: End date of a new run.
+                example: 2021-05-11
+    responses:
+      '201':
+        description: Run successfully created.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: New run successfully created
+      '400':
+        description: Error creating run.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Error creating run
+  put:
+    summary: Updating a run
+    description: Updating an existing run.
+    requestBody:
+      required: false
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              runStartDate:
+                type: Date
+                description: Start date of an existing run.
+                example: 2020-05-11
+              newRunEndDate:
+                type: Date
+                description: New end date of an existing run.
+                example: 2021-05-11
+    responses:
+      '200':
+        description: Run successfully updated.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Run end date successfully updated
+      '400':
+        description: Error updating run.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Error updating run
+      '404':
+        description: Run with provided start date not found.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Run not found
+  get:
+    summary: Information about existing runs
+    description: Get information about all existing runs.
+    responses:
+      '200':
+        description: Return an array with existing runs or empty array.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                runs:
+                  type: array
+                  example:
+                    [
+                      {
+                        'id': 5,
+                        'run_start_date': '2020-10-09T18:00:00.000Z',
+                        'run_end_date': '2021-10-09T18:00:00.000Z',
+                      },
+                      {
+                        'id': 6,
+                        'run_start_date': '2021-10-09T18:00:00.000Z',
+                        'run_end_date': '2022-10-09T18:00:00.000Z',
+                      },
+                    ]
+  delete:
+    summary: Deleting a run
+    description: Deleting an existing run.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              runStartDate:
+                type: Date
+                description: Start date of an existing run.
+                example: 2020-05-11
+    responses:
+      '204':
+        description: Run successfully deleted.
+        content:
+          application/json: {}
+      '400':
+        description: Error deleting run.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Error deleting run
+      '404':
+        description: Run with provided start date not found.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Run not found
+/run:
+  get:
+    summary: Get information about run.
+    description: Get information about run with specified start date.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              runStartDate:
+                type: string
+                description: Start date of an existing run.
+                example: '2020-10-10'
+    responses:
+      '200':
+        description: Get information about a run.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                run:
+                  type: object
+                  example:
+                    {
+                      'id': 5,
+                      'run_start_date': '2020-10-09T18:00:00.000Z',
+                      'run_end_date': '2021-10-09T18:00:00.000Z',
+                    }
+      '400':
+        description: Error finding existing run.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Error finding run
+      '404':
+        description: Run with provided start date not found.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Run not found

@@ -10,6 +10,11 @@
     "experimentalDecorators": true,
     "strictNullChecks": true
   },
-  "include": ["src/**/*.ts", "orm.config.ts"],
+  "include": [
+    "src/**/*.ts",
+    "orm.config.ts",
+    "jest.config.ts",
+    "test/**/*.test.ts"
+  ],
   "lib": ["es2017"]
 }

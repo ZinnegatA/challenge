@@ -1,10 +1,11 @@
 import { AppDataSource } from '../../orm.config';
 
 export async function initializeDatabase(): Promise<void> {
-  try {
-    await AppDataSource.initialize();
-    console.log('Database connected');
-  } catch (err) {
-    throw new Error(err);
-  }
+  await AppDataSource.initialize();
+  console.log('Database connected');
+}
+
+export async function closeDatabase(): Promise<void> {
+  await AppDataSource.destroy();
+  console.log('Database disconnected');
 }
