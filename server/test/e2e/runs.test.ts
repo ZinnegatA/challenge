@@ -4,7 +4,7 @@ import {
   closeDatabase,
   initializeDatabase,
 } from '../../src/services/database.service';
-// import { AppDataSource } from '../../orm.config';
+import { AppDataSource } from '../../orm.config';
 
 describe('POST /api/v1/runs', () => {
   let accessToken: string;
@@ -150,9 +150,8 @@ describe('DELETE /api/v1/runs/:id', () => {
   });
 
   afterAll(async () => {
-    // await AppDataSource.query(
-    //   `ALTER SEQUENCE ${entityTableName}_${idColumnName}_seq RESTART WITH 1`,
-    // );
+    await AppDataSource.query('TRUNCATE TABLE run CASCADE');
+    await AppDataSource.query('ALTER SEQUENCE run_id_seq RESTART');
     await closeDatabase();
     server.close();
   });
