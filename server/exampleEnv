@@ -1,0 +1,8 @@
+PG_CONTAINER_NAME='challenge_postgres'
+POSTGRES_USER='user'
+POSTGRES_PASSWORD='pass'
+POSTGRES_DB='js_challenge'
+PGDATA='/data/challenge_postgres'
+SECRET_KEY=examplekey
+DB_HOST=postgres
+DB_PORT=5432

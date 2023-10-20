@@ -5,12 +5,14 @@ import { initializeDatabase } from './services/database.service';
 import { Server } from 'http';
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 let server: Server;
 
+const apiBase = '/api/v1';
+
 app.use(express.json());
-app.use('/api/v1', authRouter);
-app.use('/api/v1', runsRouter);
+app.use(apiBase, authRouter);
+app.use(apiBase, runsRouter);
 
 initializeDatabase()
   .then(() => {

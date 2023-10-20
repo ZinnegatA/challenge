@@ -12,8 +12,7 @@
 /server/node_modules
 npm-debug.log
 yarn-error.log
-.env.development
-.env.test
+*.env
 
 # IDEs and editors
 .idea/
