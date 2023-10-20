@@ -6,25 +6,27 @@ import {
 } from '../../src/services/database.service';
 import { AppDataSource } from '../../orm.config';
 
+let accessToken: string;
+
+beforeAll(async () => {
+  await initializeDatabase();
+
+  const response = await request(app).post('/api/v1/login').send({
+    username: process.env.ADMIN_USERNAME,
+    password: process.env.ADMIN_PASSWORD,
+  });
+
+  accessToken = response.body.token;
+});
+
+afterAll(async () => {
+  await AppDataSource.query('TRUNCATE TABLE run CASCADE');
+  await AppDataSource.query('ALTER SEQUENCE run_id_seq RESTART');
+  await closeDatabase();
+  server.close();
+});
+
 describe('POST /api/v1/runs', () => {
-  let accessToken: string;
-
-  beforeAll(async () => {
-    await initializeDatabase();
-
-    const response = await request(app).post('/api/v1/login').send({
-      username: process.env.ADMIN_USERNAME,
-      password: process.env.ADMIN_PASSWORD,
-    });
-
-    accessToken = response.body.token;
-  });
-
-  afterAll(async () => {
-    await closeDatabase();
-    server.close();
-  });
-
   it('/api/v1/runs should create new run and return 201', async () => {
     const newRun = {
       runStartDate: '2000-10-10',
@@ -45,24 +47,6 @@ describe('POST /api/v1/runs', () => {
 });
 
 describe('PUT /api/v1/runs/:id', () => {
-  let accessToken: string;
-
-  beforeAll(async () => {
-    await initializeDatabase();
-
-    const response = await request(app).post('/api/v1/login').send({
-      username: process.env.ADMIN_USERNAME,
-      password: process.env.ADMIN_PASSWORD,
-    });
-
-    accessToken = response.body.token;
-  });
-
-  afterAll(async () => {
-    await closeDatabase();
-    server.close();
-  });
-
   it('/api/v1/runs/:id should return 404 if the run to update is not found', async () => {
     const runToUpdate = {
       newRunEndDate: '2002-10-10',
@@ -96,15 +80,6 @@ describe('PUT /api/v1/runs/:id', () => {
 });
 
 describe('GET /api/v1/runs', () => {
-  beforeAll(async () => {
-    await initializeDatabase();
-  });
-
-  afterAll(async () => {
-    await closeDatabase();
-    server.close();
-  });
-
   it('/api/v1/runs should get all runs and return 200', async () => {
     const response = await request(app).get('/api/v1/runs').expect(200);
 
@@ -113,15 +88,6 @@ describe('GET /api/v1/runs', () => {
 });
 
 describe('GET /api/v1/runs/:id', () => {
-  beforeAll(async () => {
-    await initializeDatabase();
-  });
-
-  afterAll(async () => {
-    await closeDatabase();
-    server.close();
-  });
-
   it('/api/v1/runs/:id should get details of a specific run and return 200', async () => {
     const response = await request(app).get('/api/v1/runs/1').expect(200);
 
@@ -136,26 +102,6 @@ describe('GET /api/v1/runs/:id', () => {
 });
 
 describe('DELETE /api/v1/runs/:id', () => {
-  let accessToken: string;
-
-  beforeAll(async () => {
-    await initializeDatabase();
-
-    const response = await request(app).post('/api/v1/login').send({
-      username: process.env.ADMIN_USERNAME,
-      password: process.env.ADMIN_PASSWORD,
-    });
-
-    accessToken = response.body.token;
-  });
-
-  afterAll(async () => {
-    await AppDataSource.query('TRUNCATE TABLE run CASCADE');
-    await AppDataSource.query('ALTER SEQUENCE run_id_seq RESTART');
-    await closeDatabase();
-    server.close();
-  });
-
   it('/api/v1/runs/:id should return 404 if the run to delete is not found', async () => {
     const response = await request(app)
       .delete('/api/v1/runs/0')
