@@ -26,10 +26,11 @@ export class RunsService {
     try {
       validateRequest(req, res);
 
-      const { runStartDate, newRunEndDate } = req.body;
+      const runId = parseInt(req.params.id);
+      const { newRunEndDate } = req.body;
 
       const runExists = await AppDataSource.manager.findOneBy(Run, {
-        run_start_date: runStartDate,
+        id: runId,
       });
 
       if (!runExists) {
@@ -59,10 +60,10 @@ export class RunsService {
     try {
       validateRequest(req, res);
 
-      const { runStartDate } = req.body;
+      const runId = parseInt(req.params.id);
 
       const runExists = await AppDataSource.manager.findOneBy(Run, {
-        run_start_date: runStartDate,
+        id: runId,
       });
 
       if (!runExists) {
@@ -80,10 +81,10 @@ export class RunsService {
     try {
       validateRequest(req, res);
 
-      const { runStartDate } = req.body;
+      const runId = parseInt(req.params.id);
 
       const runExists = await AppDataSource.manager.findOneBy(Run, {
-        run_start_date: runStartDate,
+        id: runId,
       });
 
       if (!runExists) {

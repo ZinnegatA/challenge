@@ -5,9 +5,8 @@
   "main": "index.ts",
   "scripts": {
     "test:e2e": "cross-env NODE_ENV=test jest --silent --verbose --detectOpenHandles --testPathPattern=test/e2e",
-    "test": "npm run test:e2e",
-    "start:dev": "cross-env NODE_ENV=development nodemon src/app.ts",
-    "start": "cross-env NODE_ENV=development npm run typeorm:migration:run && NODE_PATH=./dist node dist/src/app.js",
+    "start:dev": "tsc && cross-env NODE_ENV=development nodemon src/app.ts",
+    "start": "tsc && cross-env NODE_ENV=development npm run typeorm:migration:run && NODE_PATH=./dist node dist/src/app.js",
     "typeorm:migration:generate": "tsc && cross-env NODE_ENV=development typeorm migration:generate src/migrations/Generated -d ./dist/orm.config.js",
     "typeorm:migration:run": "tsc && cross-env NODE_ENV=development typeorm migration:run -d ./dist/orm.config.js",
     "typeorm:migration:run:test": "tsc && cross-env NODE_ENV=test typeorm migration:run -d ./dist/orm.config.js",

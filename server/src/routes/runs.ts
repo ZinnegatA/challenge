@@ -3,7 +3,6 @@ import {
   createRunValidation,
   updateRunValidation,
   getRunValidation,
-  deleteRunValidation,
 } from '../validations/runs';
 import { RunsService } from '../services/runs.service';
 import { authMiddleware } from '../middleware/authMiddleware';
@@ -18,15 +17,20 @@ router.post(
   runsService.createRun,
 );
 
-router.put('/runs', authMiddleware, updateRunValidation, runsService.updateRun);
+router.put(
+  '/runs/:id',
+  authMiddleware,
+  updateRunValidation,
+  runsService.updateRun,
+);
 
 router.get('/runs', runsService.getAllRuns);
-router.get('/run', getRunValidation, runsService.getRun);
+router.get('/runs/:id', getRunValidation, runsService.getRun);
 
 router.delete(
-  '/runs',
+  '/runs/:id',
   authMiddleware,
-  deleteRunValidation,
+  getRunValidation,
   runsService.deleteRun,
 );
 
