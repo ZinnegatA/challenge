@@ -13,3 +13,11 @@ export const adminLoginValidation = [
     .notEmpty()
     .withMessage('Password is required'),
 ];
+
+export const userRegisterValidation = [
+  check('firstName')
+    .trim()
+    .exists()
+    .notEmpty()
+    .withMessage('Correct firstName is required'),
+];
