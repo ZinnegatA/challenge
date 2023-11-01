@@ -61,3 +61,34 @@ describe('POST /api/v1/login', () => {
     expect(response.body).toHaveProperty('message', 'Incorrect password');
   });
 });
+
+describe('POST /api/v1/register', () => {
+  beforeAll(async () => {
+    await initializeDatabase();
+  });
+
+  afterAll(async () => {
+    await closeDatabase();
+    server.close();
+  });
+
+  it('/api/v1/register should return 200', async () => {
+    const userCredentials = {
+      firstName: 'firstName',
+      lastName: 'lastName',
+      telescope_link: 'https://telescope.epam.com/who/',
+      codewars_username: 'Sa1Rox',
+      photo: null,
+    };
+
+    const response = await request(app)
+      .post('/api/v1/register')
+      .send(userCredentials)
+      .expect(200);
+
+    expect(response.body).toHaveProperty(
+      'message',
+      'The user has been successfully created',
+    );
+  });
+});

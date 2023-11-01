@@ -1,12 +1,12 @@
-import type { Request, Response } from 'express';
-import { validateRequest } from '../utils/validation.helper';
-import { Admin } from '../entities/Admin';
-import { AppDataSource } from '../../orm.config';
-import { generateAccessToken } from '../utils/auth.helper';
 import { compareSync } from 'bcrypt';
-import 'dotenv/config';
+import type { Request, Response } from 'express';
+import { AppDataSource } from '../../orm.config';
+import { Admin } from '../entities/Admin';
 import { User } from '../entities/User';
+import { generateAccessToken } from '../utils/auth.helper';
+import { validateRequest } from '../utils/validation.helper';
 
+import 'dotenv/config';
 export class AuthService {
   async adminLogin(req: Request, res: Response): Promise<Response> {
     try {
@@ -46,7 +46,7 @@ export class AuthService {
       const { firstName, lastName, telescope_link, codewars_username, photo } =
         req.body;
 
-      const user = await AppDataSource.manager.create(User, {
+      const user = AppDataSource.manager.create(User, {
         firstName,
         lastName,
         telescope_link,
@@ -60,10 +60,10 @@ export class AuthService {
         .status(200)
         .json({ message: 'The user has been successfully created' });
     } catch (err) {
-      console.log(err);
-      return res
-        .status(401)
-        .json({ message: 'Error appeared during user registration process' });
+      console.log(err.message);
+      return res.status(401).json({
+        message: err.message ?? 'Error during user registration process',
+      });
     }
   }
 }
