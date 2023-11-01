@@ -2,8 +2,6 @@ import { check } from 'express-validator';
 import { getUserByUserNameFromCodeWars } from '../utils/auth.helper';
 import { isCodeWarsUserNotFoundTypeGuard } from '../interfaces/codewars.interfaces';
 
-const telescope_link_regex = /https:\/\/telescope\.epam\.com\//i;
-
 export const adminLoginValidation = [
   check('username')
     .trim()
@@ -34,9 +32,7 @@ export const userRegisterValidation = [
     .notEmpty()
     .withMessage('Telescope link is required field')
     .isURL()
-    .withMessage('Telescope link should have URL Format')
-    .matches(telescope_link_regex)
-    .withMessage('Incorrect url for EPAM Telescope Platform'),
+    .withMessage('Telescope link should have URL Format'),
   check('codewars_username')
     .trim()
     .notEmpty()
