@@ -1,6 +1,5 @@
 import { check } from 'express-validator';
-import { getUserByUserNameFromCodeWars } from '../utils/auth.helper';
-import { isCodeWarsUserNotFoundTypeGuard } from '../interfaces/codewars.interfaces';
+import { ValidateUsernameIsExistInCodeWars } from '../utils/codewars.helper';
 
 export const adminLoginValidation = [
   check('username')
@@ -37,14 +36,5 @@ export const userRegisterValidation = [
     .trim()
     .notEmpty()
     .withMessage('CodeWars username is required field')
-    .custom(async (username: string) => {
-      const checkUserInCodeWarsByUsername =
-        await getUserByUserNameFromCodeWars(username);
-
-      if (isCodeWarsUserNotFoundTypeGuard(checkUserInCodeWarsByUsername)) {
-        if (checkUserInCodeWarsByUsername.reason === 'not found') {
-          throw new Error('Username doesn`t exist in codeWars');
-        }
-      }
-    }),
+    .custom(ValidateUsernameIsExistInCodeWars),
 ];

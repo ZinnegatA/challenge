@@ -91,4 +91,24 @@ describe('POST /api/v1/register', () => {
       'The user has been successfully created',
     );
   });
+
+  it('/api/v1/register should return 401 with error in telescope_link field', async () => {
+    const userCredentials = {
+      firstName: 'firstName',
+      lastName: 'lastName',
+      telescope_link: 'something',
+      codewars_username: 'Sa1Rox',
+      photo: null,
+    };
+
+    const response = await request(app)
+      .post('/api/v1/register')
+      .send(userCredentials)
+      .expect(401);
+
+    expect(response.body).toHaveProperty(
+      'message',
+      'Telescope link should have URL Format',
+    );
+  });
 });
