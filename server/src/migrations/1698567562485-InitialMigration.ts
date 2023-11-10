@@ -1,8 +1,8 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 import { hash } from 'bcrypt';
 
-export class InitialMigration1696309820536 implements MigrationInterface {
-  name = 'InitialMigration1696309820536';
+export class InitialMigration1698567562485 implements MigrationInterface {
+  name = 'InitialMigration1698567562485';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     const adminPassword = await hash('AdminPass', 10);
@@ -11,7 +11,7 @@ export class InitialMigration1696309820536 implements MigrationInterface {
       `CREATE TABLE "run" ("id" SERIAL NOT NULL, "run_start_date" TIMESTAMP NOT NULL, "run_end_date" TIMESTAMP NOT NULL, CONSTRAINT "PK_804c38ffba92002c6d2c646dd46" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "task" ("id" SERIAL NOT NULL, "runId" integer, CONSTRAINT "PK_fb213f79ee45060ba925ecd576e" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "task" ("id" character varying NOT NULL, "name" character varying NOT NULL, "completedAt" character varying, "completedLanguages" text array, "points" integer, "fastestSolution" boolean, "runId" integer, CONSTRAINT "PK_fb213f79ee45060ba925ecd576e" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "user" ("id" SERIAL NOT NULL, "username" character varying NOT NULL, "photo" character varying NOT NULL, "telescope_link" character varying NOT NULL, "codewars_username" character varying NOT NULL, CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`,
@@ -20,7 +20,7 @@ export class InitialMigration1696309820536 implements MigrationInterface {
       `CREATE TABLE "admin" ("id" SERIAL NOT NULL, "username" character varying NOT NULL, "password" character varying NOT NULL, CONSTRAINT "PK_e032310bcef831fb83101899b10" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "user_tasks_task" ("userId" integer NOT NULL, "taskId" integer NOT NULL, CONSTRAINT "PK_5c112b153701f554843915f643f" PRIMARY KEY ("userId", "taskId"))`,
+      `CREATE TABLE "user_tasks_task" ("userId" integer NOT NULL, "taskId" character varying NOT NULL, CONSTRAINT "PK_5c112b153701f554843915f643f" PRIMARY KEY ("userId", "taskId"))`,
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_1fb6a986133f8f6cafb3d4fb31" ON "user_tasks_task" ("userId") `,
