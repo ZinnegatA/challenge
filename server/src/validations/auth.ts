@@ -1,5 +1,7 @@
 import { check } from 'express-validator';
-import { ValidateUsernameIsExistInCodeWars } from '../utils/codewars.helper';
+import { CodewarsApi } from '../utils/codewars-api';
+
+const cwApi = new CodewarsApi();
 
 export const adminLoginValidation = [
   check('username')
@@ -36,5 +38,5 @@ export const userRegisterValidation = [
     .trim()
     .notEmpty()
     .withMessage('CodeWars username is required field')
-    .custom(ValidateUsernameIsExistInCodeWars),
+    .custom(cwApi.ValidateUsernameIsExistInCodeWars),
 ];

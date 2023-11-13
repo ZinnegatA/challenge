@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Task } from '../entities/Task';
+import { isCodeWarsUserNotFoundTypeGuard } from '../interfaces/codewars.interfaces';
 
 export class CodewarsApi {
   public static readonly BASE_URL = `https://www.codewars.com/api/v1`;
@@ -14,4 +15,22 @@ export class CodewarsApi {
       throw new Error(err);
     }
   }
+
+  ValidateUsernameIsExistInCodeWars = async (
+    username: string,
+  ): Promise<void> => {
+    const checkUserInCodeWarsByUsername = await (
+      await fetch(`${CodewarsApi.BASE_URL}/users/${username}`)
+    ).json();
+
+    if (!checkUserInCodeWarsByUsername)
+      throw new Error('Error during call CodeWars api');
+
+    if (
+      isCodeWarsUserNotFoundTypeGuard(checkUserInCodeWarsByUsername) &&
+      checkUserInCodeWarsByUsername.reason === 'not found'
+    ) {
+      throw new Error('Username doesn`t exist in codeWars');
+    }
+  };
 }

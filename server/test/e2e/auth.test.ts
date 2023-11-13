@@ -1,7 +1,6 @@
 import request from 'supertest';
 import { config } from '../../src/config/config';
 
-
 describe('POST /api/v1/login', () => {
   const app = config.test.appUrl;
 
@@ -53,14 +52,7 @@ describe('POST /api/v1/login', () => {
 });
 
 describe('POST /api/v1/register', () => {
-  beforeAll(async () => {
-    await initializeDatabase();
-  });
-
-  afterAll(async () => {
-    await closeDatabase();
-    server.close();
-  });
+  const app = config.test.appUrl;
 
   it('/api/v1/register should return 200', async () => {
     const userCredentials = {
