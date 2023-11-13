@@ -1,19 +1,9 @@
 import request from 'supertest';
-import { app, server } from '../../src/app';
-import {
-  closeDatabase,
-  initializeDatabase,
-} from '../../src/services/database.service';
+import { config } from '../../src/config/config';
+
 
 describe('POST /api/v1/login', () => {
-  beforeAll(async () => {
-    await initializeDatabase();
-  });
-
-  afterAll(async () => {
-    await closeDatabase();
-    server.close();
-  });
+  const app = config.test.appUrl;
 
   it('/api/v1/login should return 200 and token', async () => {
     const adminCredentials = {

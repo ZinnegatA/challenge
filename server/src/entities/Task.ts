@@ -1,11 +1,26 @@
-import { Entity, PrimaryGeneratedColumn, ManyToMany, ManyToOne } from 'typeorm';
+import { Entity, PrimaryColumn, ManyToMany, ManyToOne, Column } from 'typeorm';
 import { User } from './User';
 import { Run } from './Run';
 
 @Entity()
 export class Task {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn({ generated: false })
+  id: string;
+
+  @Column()
+  name: string;
+
+  @Column({ nullable: true })
+  completedAt: string;
+
+  @Column('text', { nullable: true, array: true })
+  completedLanguages: string[];
+
+  @Column({ nullable: true })
+  points: number;
+
+  @Column({ nullable: true })
+  fastestSolution: boolean;
 
   @ManyToOne(() => Run, (run) => run.tasks)
   run: Run;

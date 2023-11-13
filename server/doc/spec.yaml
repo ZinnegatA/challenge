@@ -303,6 +303,177 @@ paths:
                   message:
                     type: string
                     example: Run not found
+
+  /tasks:
+    post:
+      summary: Creating a task
+      description: Creating a task if it doesn't exist.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: ID of CodeWars existing task.
+                  example: 5277c8a221e209d3f6000b56
+                runId:
+                  type: integer
+                  format: int32
+                  description: ID of an existing run.
+                  example: 1
+      responses:
+        '201':
+          description: Task successfully created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: New task with id 5277c8a221e209d3f6000b56 successfully created
+        '400':
+          description: Task already exists or error creating task.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    get:
+      summary: Information about existing tasks
+      description: Get information about all existing tasks.
+      responses:
+        '200':
+          description: Return an array with existing tasks or empty array.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  runs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Task'
+                    example:
+                      [
+                        {
+                          'id': '514b92a657cdc65150000006',
+                          'name': 'Multiples of 3 or 5',
+                          'completedAt': null,
+                          'completedLanguages': null,
+                          'points': null,
+                          'fastestSolution': null,
+                        },
+                      ]
+  /tasks/{id}:
+    get:
+      summary: Information about a specific task
+      description: Get information about a specific task.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: ID of the task to be retrieved.
+      responses:
+        '200':
+          description: Return information about the task.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  run:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: 514b92a657cdc65150000006
+                      name:
+                        type: string
+                        example: Multiples of 3 or 5
+                      completedAt:
+                        type: string
+                        format: date
+                        example: '2017-04-06T16:32:09Z'
+                      completedLanguages:
+                        type: array
+                        items:
+                          type: string
+                        example:
+                          [
+                            'javascript',
+                            'coffeescript',
+                            'ruby',
+                            'javascript',
+                            'ruby',
+                            'javascript',
+                            'ruby',
+                            'coffeescript',
+                            'javascript',
+                            'ruby',
+                            'coffeescript',
+                          ]
+                      points:
+                        type: integer
+                        format: int32
+                        example: 95
+                      fastestSolution:
+                        type: boolean
+                        example: true
+        '404':
+          description: Task with provided ID not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Task not found
+    delete:
+      summary: Deleting a task
+      description: Deleting an existing task.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: ID of the task to be deleted.
+      responses:
+        '204':
+          description: Task successfully deleted.
+          content:
+            application/json: {}
+        '400':
+          description: Error deleting task.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Error deleting task
+        '404':
+          description: Task with provided ID not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Task not found
 components:
   schemas:
     Run:
@@ -319,3 +490,41 @@ components:
           type: string
           format: date
           example: '2021-10-10'
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 514b92a657cdc65150000006
+        name:
+          type: string
+          example: Multiples of 3 or 5
+        completedAt:
+          type: string
+          format: date
+          example: '2017-04-06T16:32:09Z'
+        completedLanguages:
+          type: array
+          items:
+            type: string
+          example:
+            [
+              'javascript',
+              'coffeescript',
+              'ruby',
+              'javascript',
+              'ruby',
+              'javascript',
+              'ruby',
+              'coffeescript',
+              'javascript',
+              'ruby',
+              'coffeescript',
+            ]
+        points:
+          type: integer
+          format: int32
+          example: 95
+        fastestSolution:
+          type: boolean
+          example: true

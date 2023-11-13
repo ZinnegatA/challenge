@@ -1,22 +1,23 @@
 import express from 'express';
 import authRouter from './routes/auth';
 import runsRouter from './routes/runs';
+import tasksRouter from './routes/tasks';
 import { initializeDatabase } from './services/database.service';
-import { Server } from 'http';
+import { config } from './config/config';
 
 const app = express();
-const port = process.env.PORT || 3000;
-let server: Server;
+const port = config.app.port;
 
 const apiBase = '/api/v1';
 
 app.use(express.json());
 app.use(apiBase, authRouter);
 app.use(apiBase, runsRouter);
+app.use(apiBase, tasksRouter);
 
 initializeDatabase()
   .then(() => {
-    server = app.listen(port, () => {
+    app.listen(port, () => {
       console.log(`Express server is listening at http://localhost:${port}`);
     });
   })
@@ -25,4 +26,4 @@ initializeDatabase()
     throw new Error(error);
   });
 
-export { app, server };
+export { app };
