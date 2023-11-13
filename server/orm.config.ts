@@ -7,8 +7,8 @@ import { Run } from './src/entities/Run';
 import { Admin } from './src/entities/Admin';
 import dotenv from 'dotenv';
 
-if (!process.env.NODE_ENV){
-  throw new Error('Provide env which matches environment config name')
+if (!process.env.NODE_ENV) {
+  throw new Error('Provide env which matches environment config name');
 }
 dotenv.config({ path: `.${process.env.NODE_ENV}.env` });
 
