@@ -47,6 +47,58 @@ paths:
                   message:
                     type: string
                     example: User johndoe not found
+  /register:
+    post:
+      summary: User register
+      description: Register a user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  description: The first name of the user.
+                  example: John
+                last_name:
+                  type: string
+                  description: The last name of the user.
+                  example: Doe
+                photo:
+                  type: string
+                  description: The photo of the user.
+                  example: null
+                telescope_link:
+                  type: string
+                  description: Link to User telescope profile
+                  example: https://telescope.epam.com/who/John_Doe?tab=profile&category=all
+                codewars_username:
+                  type: string
+                  description: User codewars username
+                  example: JohnDoeCodeWars
+      responses:
+        '200':
+          description: The user has been successfully created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: The user has been successfully created
+        '401':
+          description: Error during user registration process
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Error during user registration process
   /runs:
     post:
       summary: Creating a run

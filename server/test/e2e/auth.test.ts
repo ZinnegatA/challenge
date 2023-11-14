@@ -1,7 +1,6 @@
 import request from 'supertest';
 import { config } from '../../src/config/config';
 
-
 describe('POST /api/v1/login', () => {
   const app = config.test.appUrl;
 
@@ -49,5 +48,49 @@ describe('POST /api/v1/login', () => {
       .expect(401);
 
     expect(response.body).toHaveProperty('message', 'Incorrect password');
+  });
+});
+
+describe('POST /api/v1/register', () => {
+  const app = config.test.appUrl;
+
+  it('/api/v1/register should return 200', async () => {
+    const userCredentials = {
+      firstName: 'firstName',
+      lastName: 'lastName',
+      telescope_link: 'https://telescope.epam.com/who/',
+      codewars_username: 'Sa1Rox',
+      photo: null,
+    };
+
+    const response = await request(app)
+      .post('/api/v1/register')
+      .send(userCredentials)
+      .expect(200);
+
+    expect(response.body).toHaveProperty(
+      'message',
+      'The user has been successfully created',
+    );
+  });
+
+  it('/api/v1/register should return 401 with error in telescope_link field', async () => {
+    const userCredentials = {
+      firstName: 'firstName',
+      lastName: 'lastName',
+      telescope_link: 'something',
+      codewars_username: 'Sa1Rox',
+      photo: null,
+    };
+
+    const response = await request(app)
+      .post('/api/v1/register')
+      .send(userCredentials)
+      .expect(401);
+
+    expect(response.body).toHaveProperty(
+      'message',
+      'Telescope link should have URL Format',
+    );
   });
 });
