@@ -13,7 +13,7 @@ export const authMiddleware = function (
   }
 
   try {
-    const token = req.headers.authorization?.split(' ')[1];
+    const token = req.headers.authorization;
 
     if (!token) throw new Error();
 
@@ -26,7 +26,11 @@ export const authMiddleware = function (
     req.user = decodedData;
     next();
   } catch (err) {
-    console.log(err);
-    res.status(401).json({ message: 'Authorization failed' });
+    res.status(401).json({
+      message:
+        err?.message === 'jwt expired'
+          ? 'Authorization token has been expired'
+          : 'Authorization failed',
+    });
   }
 };

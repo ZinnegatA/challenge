@@ -12,4 +12,6 @@ router.post('/login', adminLoginValidation, authService.adminLogin);
 
 router.post('/register', userRegisterValidation, authService.registerUser);
 
+router.post('/refresh', authService.refreshToken);
+
 export default router;
