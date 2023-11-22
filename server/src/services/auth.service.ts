@@ -32,12 +32,12 @@ export class AuthService {
 
       const token = generateAccessToken(
         admin.username,
-        '10s',
+        '1d',
         process.env.SECRET_KEY,
       );
       const refreshToken = generateAccessToken(
         admin.username,
-        '30m',
+        '7d',
         process.env.REFRESH_TOKEN_SECRET_KEY,
       );
 
@@ -45,7 +45,7 @@ export class AuthService {
         .cookie('refreshToken', refreshToken, {
           httpOnly: true,
           sameSite: 'strict',
-          maxAge: 604800000,
+          maxAge: 604800000, // 7d
         })
         .status(200)
         .json({ message: 'Authentication completed', token });
@@ -86,7 +86,9 @@ export class AuthService {
   async refreshToken(req: Request, res: Response) {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
-      return res.status(401).send('Access Denied. No refresh token provided.');
+      return res.status(401).json({
+        message: 'Access Denied. No refresh token provided.',
+      });
     }
 
     try {
@@ -98,7 +100,7 @@ export class AuthService {
       const accessToken = jwt.sign(
         { user: decodedUser.username },
         process.env.SECRET_KEY!,
-        { expiresIn: '1m' },
+        { expiresIn: '1d' },
       );
 
       res.status(200).send({
@@ -106,7 +108,10 @@ export class AuthService {
         token: accessToken,
       });
     } catch (error) {
-      return res.status(400).send('Invalid refresh token.');
+      console.log(error);
+      return res.status(401).json({
+        message: 'Error the token was not updated',
+      });
     }
   }
 }

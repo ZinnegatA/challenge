@@ -47,6 +47,34 @@ paths:
                   message:
                     type: string
                     example: User johndoe not found
+  /refresh:
+    post:
+      summary: Refresh token
+      description: Refresh expired token.
+      responses:
+        '200':
+          description: The token was successfully updated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: The token was successfully updated
+                  token:
+                    type: string
+                    example: your_jwt_token_here
+        '401':
+          description: Authorization failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Authorization failed
   /register:
     post:
       summary: User register
