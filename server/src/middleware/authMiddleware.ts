@@ -29,7 +29,7 @@ export const authMiddleware = function (
     res.status(401).json({
       message:
         err?.message === 'jwt expired'
-          ? 'Authorization token has been expired'
+          ? 'Authorization token has expired'
           : 'Authorization failed',
     });
   }
