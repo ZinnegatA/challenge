@@ -5,10 +5,11 @@ import { Admin } from '../entities/Admin';
 import { User } from '../entities/User';
 import { generateAccessToken } from '../utils/auth.helper';
 import { validateRequest } from '../utils/validation.helper';
+import { DecodedUser } from '../interfaces/auth.interfaces';
 import jwt from 'jsonwebtoken';
 
 import 'dotenv/config';
-import { DecodedUser } from '../interfaces/auth.interfaces';
+
 export class AuthService {
   async adminLogin(req: Request, res: Response): Promise<Response> {
     try {
