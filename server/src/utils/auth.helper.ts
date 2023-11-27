@@ -1,13 +1,15 @@
 import jwt from 'jsonwebtoken';
 
-export const generateAccessToken = (username: string): string => {
+export const generateAccessToken = (
+  username: string,
+  expiresIn: string,
+  secretKey?: string,
+): string => {
   const payload = {
     username,
   };
 
-  const secretKey = process.env.SECRET_KEY;
-
   if (!secretKey) throw new Error('Specify secret key');
 
-  return jwt.sign(payload, secretKey, { expiresIn: '24h' });
+  return jwt.sign(payload, secretKey, { expiresIn });
 };

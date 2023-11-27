@@ -94,3 +94,68 @@ describe('POST /api/v1/register', () => {
     );
   });
 });
+
+describe('POST /api/v1/refresh', () => {
+  const app = config.test.appUrl;
+
+  it('/api/v1/register should return 200', async () => {
+    const adminCredentials = {
+      username: process.env.ADMIN_USERNAME,
+      password: process.env.ADMIN_PASSWORD,
+    };
+
+    const response = await request(app)
+      .post('/api/v1/login')
+      .send(adminCredentials)
+      .expect(200);
+
+    const token = response.body.token;
+    const cookies = response.headers['set-cookie'][0];
+
+    const refreshTokenResponse = await request(app)
+      .post('/api/v1/refresh')
+      .set('Authorization', `Bearer ${token}`)
+      .set('Cookie', cookies)
+      .expect(200);
+
+    expect(refreshTokenResponse.body).toHaveProperty(
+      'message',
+      'The token was successfully updated',
+    );
+  });
+
+  it('/api/v1/register should return 401 Unauthorized if request without login', async () => {
+    const refreshTokenResponse = await request(app)
+      .post('/api/v1/refresh')
+      .expect(401);
+
+    expect(refreshTokenResponse.body).toHaveProperty(
+      'message',
+      'Authorization failed',
+    );
+  });
+
+  it('/api/v1/register should return 401 Unauthorized if request with empty cookie', async () => {
+    const adminCredentials = {
+      username: process.env.ADMIN_USERNAME,
+      password: process.env.ADMIN_PASSWORD,
+    };
+
+    const response = await request(app)
+      .post('/api/v1/login')
+      .send(adminCredentials)
+      .expect(200);
+
+    const token = response.body.token;
+
+    const refreshTokenResponse = await request(app)
+      .post('/api/v1/refresh')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(401);
+
+    expect(refreshTokenResponse.body).toHaveProperty(
+      'message',
+      'Access Denied. No refresh token provided.',
+    );
+  });
+});
