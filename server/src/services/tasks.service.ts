@@ -12,7 +12,7 @@ export class TasksService {
     try {
       validateRequest(req, res);
 
-      const { id, runId } = req.body;
+      const { id, runId, points } = req.body;
 
       const newTask = await cwApi.getCodeChallenge(id);
 
@@ -36,7 +36,10 @@ export class TasksService {
             .json({ message: `Run with ID ${runId} not found` });
         }
 
-        await AppDataSource.manager.save(Task, newTask);
+        await AppDataSource.manager.save(Task, {
+          ...newTask,
+          points,
+        });
       }
 
       return res.status(201).json({
