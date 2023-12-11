@@ -19,18 +19,20 @@ export class CodewarsApi {
   ValidateUsernameIsExistInCodeWars = async (
     username: string,
   ): Promise<void> => {
-    const checkUserInCodeWarsByUsername = await (
-      await fetch(`${CodewarsApi.BASE_URL}/users/${username}`)
-    ).json();
+    try {
+      const codewarsUserResponse = await axios.get(
+        `${CodewarsApi.BASE_URL}/users/${username}`,
+      );
+      const codewarsUser = codewarsUserResponse.data;
 
-    if (!checkUserInCodeWarsByUsername)
-      throw new Error('Error during call CodeWars api');
-
-    if (
-      isCodeWarsUserNotFoundTypeGuard(checkUserInCodeWarsByUsername) &&
-      checkUserInCodeWarsByUsername.reason === 'not found'
-    ) {
-      throw new Error('Username doesn`t exist in codeWars');
+      if (
+        isCodeWarsUserNotFoundTypeGuard(codewarsUser) &&
+        codewarsUser.reason === 'not found'
+      ) {
+        throw new Error('Username doesn`t exist in codeWars');
+      }
+    } catch (err) {
+      throw new Error(err);
     }
   };
 }

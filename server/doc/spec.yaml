@@ -86,11 +86,11 @@ paths:
             schema:
               type: object
               properties:
-                first_name:
+                firstName:
                   type: string
                   description: The first name of the user.
                   example: John
-                last_name:
+                lastName:
                   type: string
                   description: The last name of the user.
                   example: Doe
@@ -98,11 +98,11 @@ paths:
                   type: string
                   description: The photo of the user.
                   example: null
-                telescope_link:
+                telescopeLink:
                   type: string
                   description: Link to User telescope profile
                   example: https://telescope.epam.com/who/John_Doe?tab=profile&category=all
-                codewars_username:
+                codewarsUsername:
                   type: string
                   description: User codewars username
                   example: JohnDoeCodeWars
@@ -117,8 +117,8 @@ paths:
                   message:
                     type: string
                     example: The user has been successfully created
-        '401':
-          description: Error during user registration process
+        '400':
+          description: User input validation error
           content:
             application/json:
               schema:
@@ -126,7 +126,17 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: Error during user registration process
+                    example: Error during user input validation process
+        '500':
+          description: Error during registration process
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Error during registration process
   /runs:
     post:
       summary: Creating a run
