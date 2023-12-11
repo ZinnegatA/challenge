@@ -13,8 +13,7 @@
   "include": [
     "src/**/*.ts",
     "orm.config.ts",
-    "jest.config.ts",
-    "test/**/*.test.ts"
+    "jest.config.ts"
   ],
   "lib": ["es2017"]
 }
