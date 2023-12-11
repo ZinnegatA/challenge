@@ -6,7 +6,7 @@
   "scripts": {
     "test:e2e": "cross-env NODE_ENV=test jest --detectOpenHandles --runInBand --verbose --testPathPattern=test/e2e",
     "start:dev": "tsc && cross-env NODE_ENV=development nodemon src/app.ts",
-    "start": "tsc && cross-env NODE_ENV=development npm run typeorm:migration:run && NODE_PATH=./dist node dist/src/app.js",
+    "start": "tsc && cross-env NODE_ENV=development npm run typeorm:migration:run && cross-env NODE_ENV=development NODE_PATH=./dist node dist/src/app.js",
     "typeorm:migration:generate": "tsc && cross-env NODE_ENV=development typeorm migration:generate src/migrations/Generated -d ./dist/orm.config.js",
     "typeorm:migration:run": "tsc && cross-env NODE_ENV=development typeorm migration:run -d ./dist/orm.config.js",
     "typeorm:migration:run:test": "tsc && cross-env NODE_ENV=test typeorm migration:run -d ./dist/orm.config.js",

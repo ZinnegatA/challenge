@@ -7,8 +7,7 @@ import { generateAccessToken } from '../utils/auth.helper';
 import { validateRequest } from '../utils/validation.helper';
 import { DecodedUser } from '../interfaces/auth.interfaces';
 import jwt from 'jsonwebtoken';
-
-import 'dotenv/config';
+import { config } from '../config/config';
 
 export class AuthService {
   async adminLogin(req: Request, res: Response): Promise<Response> {
@@ -34,12 +33,12 @@ export class AuthService {
       const token = generateAccessToken(
         admin.username,
         '1d',
-        process.env.SECRET_KEY,
+        config.app.secretKey,
       );
       const refreshToken = generateAccessToken(
         admin.username,
         '7d',
-        process.env.REFRESH_TOKEN_SECRET_KEY,
+        config.app.secretKey,
       );
 
       return res
@@ -99,12 +98,12 @@ export class AuthService {
     try {
       const decodedUser = jwt.verify(
         refreshToken,
-        process.env.SECRET_KEY ?? '',
+        config.app.secretKey ?? '',
       ) as DecodedUser;
 
       const accessToken = jwt.sign(
         { user: decodedUser.username },
-        process.env.SECRET_KEY ?? '',
+        config.app.secretKey ?? '',
         { expiresIn: '1d' },
       );
 

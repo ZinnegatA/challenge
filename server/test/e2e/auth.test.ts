@@ -86,11 +86,11 @@ describe('POST /api/v1/register', () => {
     const response = await request(app)
       .post('/api/v1/register')
       .send(userCredentials)
-      .expect(401);
+      .expect(400);
 
     expect(response.body).toHaveProperty(
       'message',
-      'Telescope link should have URL Format',
+      'Validation error: telescopeLink should have URL Format;',
     );
   });
 });
