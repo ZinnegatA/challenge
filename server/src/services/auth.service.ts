@@ -7,8 +7,7 @@ import { generateAccessToken } from '../utils/auth.helper';
 import { validateRequest } from '../utils/validation.helper';
 import { DecodedUser } from '../interfaces/auth.interfaces';
 import jwt from 'jsonwebtoken';
-
-import 'dotenv/config';
+import { config } from '../config/config';
 
 export class AuthService {
   async adminLogin(req: Request, res: Response): Promise<Response> {
@@ -34,12 +33,12 @@ export class AuthService {
       const token = generateAccessToken(
         admin.username,
         '1d',
-        process.env.SECRET_KEY,
+        config.app.secretKey,
       );
       const refreshToken = generateAccessToken(
         admin.username,
         '7d',
-        process.env.REFRESH_TOKEN_SECRET_KEY,
+        config.app.secretKey,
       );
 
       return res
@@ -60,14 +59,14 @@ export class AuthService {
     try {
       validateRequest(req, res);
 
-      const { firstName, lastName, telescope_link, codewars_username, photo } =
+      const { firstName, lastName, telescopeLink, codewarsUsername, photo } =
         req.body;
 
       const user = AppDataSource.manager.create(User, {
         firstName,
         lastName,
-        telescope_link,
-        codewars_username,
+        telescopeLink,
+        codewarsUsername,
         photo,
       });
 
@@ -78,13 +77,17 @@ export class AuthService {
         .json({ message: 'The user has been successfully created' });
     } catch (err) {
       console.log(err);
-      return res.status(401).json({
-        message: err.message ?? 'Error during user registration process',
+      if (err.type === 'ValidationError') {
+        return res.status(400).json({ message: err.message });
+      }
+
+      return res.status(500).json({
+        message: 'Something went wrong',
       });
     }
   }
 
-  async refreshToken(req: Request, res: Response) {
+  async refreshToken(req: Request, res: Response): Promise<Response> {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
       return res.status(401).json({
@@ -95,16 +98,16 @@ export class AuthService {
     try {
       const decodedUser = jwt.verify(
         refreshToken,
-        process.env.SECRET_KEY!,
+        config.app.secretKey ?? '',
       ) as DecodedUser;
 
       const accessToken = jwt.sign(
         { user: decodedUser.username },
-        process.env.SECRET_KEY!,
+        config.app.secretKey ?? '',
         { expiresIn: '1d' },
       );
 
-      res.status(200).send({
+      return res.status(200).send({
         message: 'The token was successfully updated',
         token: accessToken,
       });

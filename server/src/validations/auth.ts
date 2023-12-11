@@ -3,6 +3,13 @@ import { CodewarsApi } from '../utils/codewars-api';
 
 const cwApi = new CodewarsApi();
 
+const REGISTRATION_FIELDS = {
+  FIRST_NAME: 'firstName',
+  LAST_NAME: 'lastName',
+  TELESCOPE_LINK: 'telescopeLink',
+  CODEWARS_USERNAME: 'codewarsUsername',
+};
+
 export const adminLoginValidation = [
   check('username')
     .trim()
@@ -18,25 +25,27 @@ export const adminLoginValidation = [
 ];
 
 export const userRegisterValidation = [
-  check('firstName')
+  check(REGISTRATION_FIELDS.FIRST_NAME)
     .trim()
     .escape()
     .notEmpty()
-    .withMessage('Firstname is required field'),
-  check('lastName')
+    .withMessage(`${REGISTRATION_FIELDS.FIRST_NAME} is required field`),
+  check(REGISTRATION_FIELDS.LAST_NAME)
     .trim()
     .escape()
     .notEmpty()
-    .withMessage('Lastname is required field'),
-  check('telescope_link')
+    .withMessage(`${REGISTRATION_FIELDS.LAST_NAME} is required field`),
+  check(REGISTRATION_FIELDS.TELESCOPE_LINK)
     .trim()
     .notEmpty()
-    .withMessage('Telescope link is required field')
+    .withMessage(`${REGISTRATION_FIELDS.TELESCOPE_LINK} is required field`)
     .isURL()
-    .withMessage('Telescope link should have URL Format'),
-  check('codewars_username')
+    .withMessage(
+      `${REGISTRATION_FIELDS.TELESCOPE_LINK} should have URL Format`,
+    ),
+  check(REGISTRATION_FIELDS.CODEWARS_USERNAME)
     .trim()
     .notEmpty()
-    .withMessage('CodeWars username is required field')
+    .withMessage(`${REGISTRATION_FIELDS.CODEWARS_USERNAME} is required field`)
     .custom(cwApi.ValidateUsernameIsExistInCodeWars),
 ];

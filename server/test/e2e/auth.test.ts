@@ -58,8 +58,8 @@ describe('POST /api/v1/register', () => {
     const userCredentials = {
       firstName: 'firstName',
       lastName: 'lastName',
-      telescope_link: 'https://telescope.epam.com/who/',
-      codewars_username: 'Sa1Rox',
+      telescopeLink: 'https://telescope.epam.com/who/',
+      codewarsUsername: 'Sa1Rox',
       photo: null,
     };
 
@@ -78,19 +78,19 @@ describe('POST /api/v1/register', () => {
     const userCredentials = {
       firstName: 'firstName',
       lastName: 'lastName',
-      telescope_link: 'something',
-      codewars_username: 'Sa1Rox',
+      telescopeLink: 'something',
+      codewarsUsername: 'Sa1Rox',
       photo: null,
     };
 
     const response = await request(app)
       .post('/api/v1/register')
       .send(userCredentials)
-      .expect(401);
+      .expect(400);
 
     expect(response.body).toHaveProperty(
       'message',
-      'Telescope link should have URL Format',
+      'Validation error: telescopeLink should have URL Format;',
     );
   });
 });

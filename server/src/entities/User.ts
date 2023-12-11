@@ -27,11 +27,15 @@ export class User {
   })
   photo: string;
 
-  @Column()
-  telescope_link: string;
+  @Column({
+    name: 'telescope_link',
+  })
+  telescopeLink: string;
 
-  @Column()
-  codewars_username: string;
+  @Column({
+    name: 'codewars_username',
+  })
+  codewarsUsername: string;
 
   @ManyToMany(() => Task, (task) => task.users)
   @JoinTable()
