@@ -58,8 +58,8 @@ describe('POST /api/v1/register', () => {
     const userCredentials = {
       firstName: 'firstName',
       lastName: 'lastName',
-      telescope_link: 'https://telescope.epam.com/who/',
-      codewars_username: 'Sa1Rox',
+      telescopeLink: 'https://telescope.epam.com/who/',
+      codewarsUsername: 'Sa1Rox',
       photo: null,
     };
 
@@ -78,8 +78,8 @@ describe('POST /api/v1/register', () => {
     const userCredentials = {
       firstName: 'firstName',
       lastName: 'lastName',
-      telescope_link: 'something',
-      codewars_username: 'Sa1Rox',
+      telescopeLink: 'something',
+      codewarsUsername: 'Sa1Rox',
       photo: null,
     };
 
