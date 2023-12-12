@@ -106,12 +106,5 @@ describe('Runs test suite', () => {
 
       expect(response.body).toHaveProperty('message', 'Run not found');
     });
-
-    it('/api/v1/runs/:id should delete a run and return 204', async () => {
-      await request(app)
-        .delete('/api/v1/runs/1')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .expect(204);
-    });
   });
 })

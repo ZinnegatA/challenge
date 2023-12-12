@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { validateRequest } from '../utils/validation.helper';
 import { AppDataSource } from '../../orm.config';
 import { Run } from '../entities/Run';
+import { Task } from '../entities/Task';
 
 export class RunsService {
   async createRun(req: Request, res: Response): Promise<Response> {
@@ -50,32 +51,46 @@ export class RunsService {
     }
   }
 
-  async getAllRuns(req: Request, res: Response): Promise<Response> {
+  getTasksForRun = async (run: Run): Promise<Task[]> => {
+    return await AppDataSource.manager
+      .createQueryBuilder()
+      .relation(Run, 'tasks')
+      .of(run)
+      .loadMany();
+  };
+
+  getAllRuns = async (req: Request, res: Response): Promise<Response> => {
     const runs = await AppDataSource.manager.find(Run);
 
-    return res.status(200).json({ runs });
-  }
+    for (const run of runs) {
+      run.tasks = await this.getTasksForRun(run);
+    }
 
-  async getRun(req: Request, res: Response): Promise<Response> {
+    return res.status(200).json({ runs });
+  };
+
+  getRun = async (req: Request, res: Response): Promise<Response> => {
     try {
       validateRequest(req, res);
 
       const runId = parseInt(req.params.id);
 
-      const runExists = await AppDataSource.manager.findOneBy(Run, {
+      const run = await AppDataSource.manager.findOneBy(Run, {
         id: runId,
       });
 
-      if (!runExists) {
+      if (!run) {
         return res.status(404).json({ message: 'Run not found' });
       }
 
-      return res.status(200).json({ run: runExists });
+      run.tasks = await this.getTasksForRun(run);
+
+      return res.status(200).json({ run });
     } catch (err) {
       console.log(err);
       return res.status(400).json({ message: 'Error finding run' });
     }
-  }
+  };
 
   async deleteRun(req: Request, res: Response): Promise<Response> {
     try {
