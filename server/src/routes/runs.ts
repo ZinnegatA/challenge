@@ -26,6 +26,11 @@ router.put(
 
 router.get('/runs', runsService.getAllRuns);
 router.get('/runs/:id', getRunValidation, runsService.getRun);
+router.get(
+  '/runs/:id/leaderboard',
+  getRunValidation,
+  runsService.getLeaderboard,
+);
 
 router.delete(
   '/runs/:id',

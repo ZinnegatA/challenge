@@ -4,13 +4,15 @@ import {
   Column,
   ManyToMany,
   JoinTable,
+  OneToMany,
 } from 'typeorm';
 import { Task } from './Task';
+import { Solution } from './Solution';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn({ type: 'int' })
+  id: string;
 
   @Column({
     name: 'first_name',
@@ -40,4 +42,8 @@ export class User {
   @ManyToMany(() => Task, (task) => task.users)
   @JoinTable()
   tasks: Task[];
+
+  @OneToMany(() => Solution, (solution) => solution.user)
+  @JoinTable()
+  solutions: Solution[];
 }

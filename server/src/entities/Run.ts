@@ -12,6 +12,9 @@ export class Run {
   @Column()
   run_end_date: Date;
 
+  @Column({ name: 'leaderboard_updated_date', nullable: true })
+  leaderboardUpdatedDate: Date;
+
   @OneToMany(() => Task, (task) => task.run)
   tasks: Task[];
 }

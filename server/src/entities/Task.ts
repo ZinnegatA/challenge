@@ -1,6 +1,14 @@
-import { Entity, PrimaryColumn, ManyToMany, ManyToOne, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryColumn,
+  ManyToMany,
+  ManyToOne,
+  Column,
+  OneToMany,
+} from 'typeorm';
 import { User } from './User';
 import { Run } from './Run';
+import { Solution } from './Solution';
 
 @Entity()
 export class Task {
@@ -27,4 +35,7 @@ export class Task {
 
   @ManyToMany(() => User, (user) => user.tasks)
   users: User[];
+
+  @OneToMany(() => Solution, (solution) => solution.task)
+  solutions: Solution[];
 }
