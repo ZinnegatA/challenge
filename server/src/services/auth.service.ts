@@ -62,7 +62,7 @@ export class AuthService {
       const { firstName, lastName, telescopeLink, codewarsUsername, photo } =
         req.body;
 
-      const userExists = await AppDataSource.manager.findBy(User, [
+      const userExists = await AppDataSource.manager.findOneBy(User, [
         {
           telescopeLink,
         },
