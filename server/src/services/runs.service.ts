@@ -197,8 +197,6 @@ export class RunsService {
       !lastUpdatedDate ||
       now.getTime() - lastUpdatedDate.getTime() > LEADERBOARD_UPDATE_PERIOD;
 
-    console.log(now.getTime() - lastUpdatedDate.getTime());
-
     if (!shouldUpdateLeaderboard) {
       return;
     }
