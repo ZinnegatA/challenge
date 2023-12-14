@@ -5,8 +5,20 @@ export interface CodeWarsUser {
   clan: string;
   leaderboardPosition: number;
   skills: string[];
-  ranks: {};
-  codeChallenges: {};
+}
+
+export interface CompletedChallenge {
+  id: string;
+  name: string;
+  slug: string;
+  completedAt: string;
+  completedLanguages: string[];
+}
+
+export interface CompletedChallenges {
+  totalPages: number;
+  totalNumber: number;
+  data: CompletedChallenge[];
 }
 
 export interface CodeWarsUserNotFound {

@@ -62,6 +62,22 @@ export class AuthService {
       const { firstName, lastName, telescopeLink, codewarsUsername, photo } =
         req.body;
 
+      const userExists = await AppDataSource.manager.findBy(User, [
+        {
+          telescopeLink,
+        },
+        {
+          codewarsUsername,
+        },
+      ]);
+
+      if (userExists) {
+        return res.status(400).json({
+          message:
+            'User with such a telescope profile or codewars username already exists',
+        });
+      }
+
       const user = AppDataSource.manager.create(User, {
         firstName,
         lastName,
@@ -76,7 +92,6 @@ export class AuthService {
         .status(200)
         .json({ message: 'The user has been successfully created' });
     } catch (err) {
-      console.log(err);
       if (err.type === 'ValidationError') {
         return res.status(400).json({ message: err.message });
       }
