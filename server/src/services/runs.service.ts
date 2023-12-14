@@ -7,6 +7,7 @@ import { CodewarsApi } from '../utils/codewars-api';
 import { User } from '../entities/User';
 import { Solution } from '../entities/Solution';
 import { generateLeaderboardResponse } from '../utils/leaderboard.helper';
+import { LessThan } from 'typeorm';
 
 const cwApi = new CodewarsApi();
 const LEADERBOARD_UPDATE_PERIOD = 60 * 60 * 1000; // 1 hour
@@ -98,8 +99,21 @@ export class RunsService {
     });
   };
 
-  getAllRuns = async (req: Request, res: Response): Promise<Response> => {
-    const runs = await AppDataSource.manager.find(Run);
+  getAllRuns = async (
+    req: Request,
+    res: Response,
+    futureRunsIncluded?: boolean,
+  ): Promise<Response> => {
+    const runs = await AppDataSource.manager.find(
+      Run,
+      !futureRunsIncluded
+        ? {
+            where: {
+              run_start_date: LessThan(new Date()),
+            },
+          }
+        : undefined,
+    );
 
     for (const run of runs) {
       run.tasks = await this.getTasksForRun(run);
@@ -193,9 +207,12 @@ export class RunsService {
     const lastUpdatedDate = run.leaderboardUpdatedDate;
     const now = new Date();
 
-    const shouldUpdateLeaderboard =
+    const isCurrentRun = run.run_end_date.getTime() - now.getTime() > 0;
+    const isNotRelevant =
       !lastUpdatedDate ||
       now.getTime() - lastUpdatedDate.getTime() > LEADERBOARD_UPDATE_PERIOD;
+
+    const shouldUpdateLeaderboard = isNotRelevant && isCurrentRun;
 
     if (!shouldUpdateLeaderboard) {
       return;
