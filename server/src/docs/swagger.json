@@ -5,6 +5,9 @@
       "title": "JS Coding challenge",
       "description": "API for JS coding challenge"
     },
+    "servers": [
+      { "url": "/api/v1" }
+    ],
     "paths": {
       "/login": {
         "post": {
