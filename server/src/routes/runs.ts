@@ -24,7 +24,12 @@ router.put(
   runsService.updateRun,
 );
 
-router.get('/runs', runsService.getAllRuns);
+router.get('/runs', async (req, res) => await runsService.getAllRuns(req, res));
+router.get(
+  '/runs/all',
+  authMiddleware,
+  async (req, res) => await runsService.getAllRuns(req, res, true),
+);
 router.get('/runs/:id', getRunValidation, runsService.getRun);
 router.get(
   '/runs/:id/leaderboard',
