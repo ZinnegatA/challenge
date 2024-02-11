@@ -14,8 +14,11 @@
     "ecmaVersion": 2015,
     "sourceType": "module"
   },
+  "ignorePatterns": [
+    "**/migrations/*.ts"
+  ],
   "rules": {
-    "prettier/prettier": "error",
+    "prettier/prettier": "warn",
     "@typescript-eslint/consistent-type-imports": "off",
     "@typescript-eslint/strict-boolean-expressions": "off",
     "@typescript-eslint/no-misused-promises": "off"

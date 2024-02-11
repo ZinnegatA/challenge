@@ -3,15 +3,21 @@ import { validateRequest } from '../utils/validation.helper';
 import { AppDataSource } from '../../orm.config';
 import { Run } from '../entities/Run';
 import { Task } from '../entities/Task';
-import { CodewarsApi } from '../utils/codewars-api';
 import { User } from '../entities/User';
 import { Solution } from '../entities/Solution';
 import { generateLeaderboardResponse } from '../utils/leaderboard.helper';
-import { LessThan } from 'typeorm';
+import { And, LessThan, MoreThan } from 'typeorm';
+import ParticipationsService from './participations.service';
+import { Participation } from '../entities/Participation';
 
-const cwApi = new CodewarsApi();
 const LEADERBOARD_UPDATE_PERIOD = 60 * 60 * 1000; // 1 hour
 export class RunsService {
+  participationsService: ParticipationsService;
+
+  constructor() {
+    this.participationsService = new ParticipationsService();
+  }
+
   async createRun(req: Request, res: Response): Promise<Response> {
     try {
       validateRequest(req, res);
@@ -66,12 +72,19 @@ export class RunsService {
       .loadMany();
   };
 
-  getSolutionsForTask = async (task: Task): Promise<Solution[]> => {
-    return await AppDataSource.manager
-      .createQueryBuilder()
-      .relation(Task, 'solutions')
-      .of(task)
-      .loadMany();
+  getSolutionsForTask = async (task: Task, run: Run): Promise<Solution[]> => {
+    return await AppDataSource.manager.find(Solution, {
+      relations: ['task'],
+      where: {
+        task: {
+          id: task.id,
+        },
+        completedAt: And(
+          MoreThan(run.run_start_date),
+          LessThan(run.run_end_date),
+        ),
+      },
+    });
   };
 
   getUserForSolution = async (
@@ -82,21 +95,6 @@ export class RunsService {
       .relation(Solution, 'user')
       .of(solution)
       .loadOne();
-  };
-
-  getSolution = async (
-    codewarsId: string,
-    userId: string,
-  ): Promise<Solution | null> => {
-    return await AppDataSource.manager.findOne(Solution, {
-      relations: ['user'],
-      where: {
-        user: {
-          id: userId,
-        },
-        codewarsId,
-      },
-    });
   };
 
   getAllRuns = async (
@@ -183,18 +181,25 @@ export class RunsService {
       await this.generateLeaderboard(run);
       run.tasks = await this.getTasksForRun(run);
 
-      const users = await AppDataSource.manager.find(User, {
-        relations: ['solutions'],
-        where: run.tasks.map((task) => ({
-          solutions: {
-            codewarsId: task.id,
+      const participations = await AppDataSource.manager.find(Participation, {
+        relations: [
+          'run',
+          'solutions',
+          'solutions.task',
+          'user',
+          'user.participations',
+          'user.participations.solutions',
+        ],
+        where: {
+          run: {
+            id: run.id,
           },
-        })),
+        },
       });
 
-      return res
-        .status(200)
-        .json({ leaderboard: generateLeaderboardResponse(run, users) });
+      return res.status(200).json({
+        leaderboard: generateLeaderboardResponse(participations, run),
+      });
     } catch (err) {
       console.log(err);
       return res.status(500).json({ message: 'Something went wrong' });
@@ -226,36 +231,7 @@ export class RunsService {
     const users = await AppDataSource.manager.find(User);
 
     for (const user of users) {
-      // get all users tasks from the codewars
-      const userTasks = await cwApi.getCompletedChallenges(
-        user.codewarsUsername,
-      );
-
-      // find users who participated in run
-      const tasks = userTasks.filter((task) =>
-        Object.keys(runTasks).includes(task.id),
-      );
-
-      await Promise.all(
-        tasks.map(async (task) => {
-          const solutionExists = await this.getSolution(
-            runTasks[task.id].id,
-            user.id,
-          );
-
-          if (!solutionExists) {
-            return await AppDataSource.manager.save(Solution, {
-              task: runTasks[task.id],
-              user,
-              codewarsId: task.id,
-              completedAt: task.completedAt,
-              fastestSolution: false,
-            });
-          }
-        }),
-      ).catch((error) => {
-        console.log(error);
-      });
+      await this.participationsService.updateUserParticipationData(run, user);
     }
 
     // mark fastest solutions
@@ -269,7 +245,7 @@ export class RunsService {
   markFastestSolutions = async (run: Run): Promise<undefined> => {
     await Promise.all(
       run.tasks.map(async (task) => {
-        const solutions = await this.getSolutionsForTask(task);
+        const solutions = await this.getSolutionsForTask(task, run);
 
         if (!solutions.length) return;
 

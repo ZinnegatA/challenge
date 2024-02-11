@@ -7,6 +7,7 @@ import { Run } from './src/entities/Run';
 import { Admin } from './src/entities/Admin';
 import dotenv from 'dotenv';
 import { Solution } from './src/entities/Solution';
+import { Participation } from './src/entities/Participation';
 
 if (!process.env.NODE_ENV) {
   throw new Error('Provide env which matches environment config name');
@@ -23,7 +24,7 @@ export const AppDataSource = new DataSource({
   database: process.env.POSTGRES_DB,
   synchronize: true,
   logging: false,
-  entities: [User, Task, Run, Admin, Solution],
+  entities: [User, Task, Run, Admin, Solution, Participation],
   migrations: [path.join(__dirname, '/src/migrations/**/*{.js,.ts}')],
   subscribers: [path.join(__dirname, '/src/subscribers/**/*{.js,.ts}')],
 });

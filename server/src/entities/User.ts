@@ -5,12 +5,16 @@ import {
   ManyToMany,
   JoinTable,
   OneToMany,
+  AfterLoad,
 } from 'typeorm';
 import { Task } from './Task';
 import { Solution } from './Solution';
+import { Participation } from './Participation';
 
 @Entity()
 export class User {
+  totalPoints: number;
+
   @PrimaryGeneratedColumn({ type: 'int' })
   id: string;
 
@@ -39,6 +43,9 @@ export class User {
   })
   codewarsUsername: string;
 
+  @OneToMany(() => Participation, (participation) => participation.user)
+  participations: Participation[];
+
   @ManyToMany(() => Task, (task) => task.users)
   @JoinTable()
   tasks: Task[];
@@ -46,4 +53,13 @@ export class User {
   @OneToMany(() => Solution, (solution) => solution.user)
   @JoinTable()
   solutions: Solution[];
+
+  @AfterLoad()
+  setTotalPoints(): void {
+    if (this.participations) {
+      this.totalPoints = this.participations.reduce((points, participation) => {
+        return points + participation.totalPoints;
+      }, 0);
+    }
+  }
 }

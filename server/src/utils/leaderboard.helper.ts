@@ -1,3 +1,4 @@
+import { Participation } from '../entities/Participation';
 import { Run } from '../entities/Run';
 import { Solution } from '../entities/Solution';
 import { Task } from '../entities/Task';
@@ -6,14 +7,23 @@ import { User } from '../entities/User';
 type SolutionWithPoints = Solution & { points: number };
 type SolvedTasks = Record<string, SolutionWithPoints | undefined>;
 
-const FASTEST_SOLUTION_BONUS = 5;
+export const FASTEST_SOLUTION_BONUS = 5;
 
 interface Solutions {
   points: number;
   tasks: SolvedTasks;
 }
 
-interface UserWithMappedSolutions extends Omit<User, 'solutions'> {
+interface UserWithMappedSolutions
+  extends Omit<
+    User,
+    | 'solutions'
+    | 'participations'
+    | 'totalPoints'
+    | 'id'
+    | 'tasks'
+    | 'setTotalPoints'
+  > {
   solutions: Solutions;
 }
 
@@ -25,41 +35,48 @@ export interface Leaderboard {
 
 const buildSolutionsObject = (
   tasks: Task[],
-  user,
+  solutions,
+  totalPoints,
+  currentRunPoints,
 ): Solutions & { points: number } => {
-  const solutions = {
-    points: 0,
-    prevPoints: 0,
+  const solutionsObject = {
+    points: totalPoints,
+    prevPoints: totalPoints - currentRunPoints,
     tasks: {},
   };
-  tasks.map((task) => (solutions.tasks[task.id] = null));
-  user.solutions.forEach((solution) => {
+  tasks.map((task) => (solutionsObject.tasks[task.id] = null));
+  solutions.forEach((solution) => {
     const task = tasks.find((task) => task.id === solution.codewarsId);
     if (task) {
-      solutions.tasks[solution.codewarsId] = {
+      solutionsObject.tasks[solution.codewarsId] = {
         ...solution,
-        points: task.points,
       };
-      solutions.points += task.points;
-      if (solution.fastestSolution) {
-        solutions.points += FASTEST_SOLUTION_BONUS;
-      }
     }
   });
+  solutionsObject.points = totalPoints;
 
-  return solutions;
+  return solutionsObject;
 };
 
 export const generateLeaderboardResponse = (
+  participations: Participation[],
   run: Run,
-  users: User[],
 ): Leaderboard => {
   return {
     leaderboardUpdatedDate: run.leaderboardUpdatedDate,
     fastestSolutionBonus: FASTEST_SOLUTION_BONUS,
-    users: users.map((user) => ({
-      ...user,
-      solutions: buildSolutionsObject(run.tasks, user),
+    users: participations.map((participation) => ({
+      firstName: participation.user.firstName,
+      lastName: participation.user.lastName,
+      photo: participation.user.photo,
+      telescopeLink: participation.user.telescopeLink,
+      codewarsUsername: participation.user.codewarsUsername,
+      solutions: buildSolutionsObject(
+        run.tasks,
+        participation.solutions,
+        participation.user.totalPoints,
+        participation.totalPoints,
+      ),
     })),
   };
 };

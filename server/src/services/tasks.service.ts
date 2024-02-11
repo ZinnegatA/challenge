@@ -57,6 +57,17 @@ export class TasksService {
     return res.status(200).json({ tasks });
   }
 
+  async getTasksByRun(run: Run): Promise<Task[]> {
+    return await AppDataSource.manager.find(Task, {
+      relations: ['run'],
+      where: {
+        run: {
+          id: run.id,
+        },
+      },
+    });
+  }
+
   async getTask(req: Request, res: Response): Promise<Response> {
     try {
       validateRequest(req, res);

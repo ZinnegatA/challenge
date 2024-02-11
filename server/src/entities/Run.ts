@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Task } from './Task';
+import { Participation } from './Participation';
 
 @Entity()
 export class Run {
@@ -17,4 +18,7 @@ export class Run {
 
   @OneToMany(() => Task, (task) => task.run)
   tasks: Task[];
+
+  @OneToMany(() => Participation, (participation) => participation.run)
+  participations: Participation;
 }

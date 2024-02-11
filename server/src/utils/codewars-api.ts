@@ -38,6 +38,20 @@ export class CodewarsApi {
     }
   }
 
+  async getCompletedChallengesByIds(
+    username: string,
+    taskIds: string[],
+  ): Promise<CompletedChallenge[]> {
+    try {
+      const allCompleted = await this.getCompletedChallenges(username);
+      return allCompleted.filter(
+        (completed) => !!taskIds.find((id) => id === completed.id),
+      );
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
   ValidateUsernameIsExistInCodeWars = async (
     username: string,
   ): Promise<void> => {
