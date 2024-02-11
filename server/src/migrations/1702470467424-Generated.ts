@@ -13,9 +13,6 @@ export class Generated1702470467424 implements MigrationInterface {
         await queryRunner.query(
             `ALTER TABLE "participation" ADD CONSTRAINT "FK_8ed09e9b7e0a3a150f9515f254f" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`
         );
-        await queryRunner.query(
-            `INSERT INTO "migrations"("timestamp", "name") VALUES ($1, $2) -- PARAMETERS: [1702470467424,"Generated1702470467424"]`
-        );
     }
 
     public async down() {}
