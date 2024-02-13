@@ -113,6 +113,20 @@ export class RunsService {
         : undefined,
     );
 
+    if (!futureRunsIncluded && !runs.length) {
+      const closestRun = await AppDataSource.manager.find(Run, {
+        select: {
+          run_start_date: true,
+        },
+        order: {
+          run_start_date: 'ASC',
+        },
+      });
+      return res
+        .status(404)
+        .json({ closestRunStartDate: closestRun[0]?.run_start_date });
+    }
+
     for (const run of runs) {
       run.tasks = await this.getTasksForRun(run);
     }
