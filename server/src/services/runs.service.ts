@@ -16,6 +16,11 @@ const timeout = async (ms: number): Promise<NodeJS.Timeout> => {
   return await new Promise((resolve) => setTimeout(resolve, ms));
 };
 
+// date comes in MM-DD-YYYY format from the FE
+const formatDate = (date: string): Date => {
+  return new Date(`${date}T15:00:00.000+06:00`);
+};
+
 export class RunsService {
   participationsService: ParticipationsService;
 
@@ -42,8 +47,8 @@ export class RunsService {
       const { runStartDate, runEndDate } = req.body;
 
       await AppDataSource.manager.save(Run, {
-        run_start_date: runStartDate,
-        run_end_date: runEndDate,
+        run_start_date: formatDate(runStartDate),
+        run_end_date: formatDate(runEndDate),
       });
 
       return res.status(201).json({ message: 'New run successfully created' });
@@ -68,7 +73,7 @@ export class RunsService {
         return res.status(404).json({ message: 'Run not found' });
       }
 
-      runExists.run_end_date = newRunEndDate;
+      runExists.run_end_date = formatDate(newRunEndDate);
 
       await AppDataSource.manager.save(runExists);
 
@@ -239,54 +244,48 @@ export class RunsService {
 
   generateLeaderboard = async (): Promise<undefined> => {
     const runTasks = {};
-    // const now = new Date();
+    const now = new Date();
 
-    console.log('hello');
+    const currentRun = await AppDataSource.manager.findOne(Run, {
+      where: {
+        run_start_date: LessThan(now),
+        run_end_date: MoreThan(now),
+      },
+    });
 
-    // const currentRun = await AppDataSource.manager.findOne(Run, {
-    //   where: {
-    //     run_start_date: LessThan(now),
-    //     run_end_date: MoreThan(now),
-    //   },
-    // });
-
-    const runs = await AppDataSource.manager.find(Run);
-
-    for (const currentRun of runs) {
-      if (!currentRun) {
-        console.error('No run to generate a leaderboard');
-        return;
-      }
-
-      console.log(currentRun, `Updating leaderboard of RUN ${currentRun?.id}`);
-
-      // find tasks which belongs to run
-      currentRun.tasks = await this.getTasksForRun(currentRun);
-      currentRun.tasks.forEach((task) => (runTasks[task.id] = task));
-
-      // get all the users
-      const users = await AppDataSource.manager.find(User);
-
-      for (const user of users) {
-        try {
-          await this.participationsService.updateUserParticipationData(
-            currentRun,
-            user,
-          );
-          console.log(
-            `Updated data of user ${user.firstName}: ${user.codewarsUsername}`,
-          );
-          await timeout(1000);
-        } catch (e) {
-          console.error(
-            `Didn't update data of user ${user.firstName}: ${user.codewarsUsername}`,
-          );
-        }
-      }
-
-      // update leaderboardUpdatedDate
-      currentRun.leaderboardUpdatedDate = new Date();
-      await AppDataSource.manager.save(Run, currentRun);
+    if (!currentRun) {
+      console.error('No run to generate a leaderboard');
+      return;
     }
+
+    console.log(currentRun, `Updating leaderboard of RUN ${currentRun?.id}`);
+
+    // find tasks which belongs to run
+    currentRun.tasks = await this.getTasksForRun(currentRun);
+    currentRun.tasks.forEach((task) => (runTasks[task.id] = task));
+
+    // get all the users
+    const users = await AppDataSource.manager.find(User);
+
+    for (const user of users) {
+      try {
+        await this.participationsService.updateUserParticipationData(
+          currentRun,
+          user,
+        );
+        console.log(
+          `Updated data of user ${user.firstName}: ${user.codewarsUsername}`,
+        );
+        await timeout(1000);
+      } catch (e) {
+        console.error(
+          `Didn't update data of user ${user.firstName}: ${user.codewarsUsername}`,
+        );
+      }
+    }
+
+    // update leaderboardUpdatedDate
+    currentRun.leaderboardUpdatedDate = new Date();
+    await AppDataSource.manager.save(Run, currentRun);
   };
 }
