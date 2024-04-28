@@ -11,11 +11,28 @@ import ParticipationsService from './participations.service';
 import { Participation } from '../entities/Participation';
 
 const LEADERBOARD_UPDATE_PERIOD = 60 * 60 * 1000; // 1 hour
+
+const timeout = async (ms: number): Promise<NodeJS.Timeout> => {
+  return await new Promise((resolve) => setTimeout(resolve, ms));
+};
+
 export class RunsService {
   participationsService: ParticipationsService;
 
   constructor() {
     this.participationsService = new ParticipationsService();
+    this.initiateLeaderboardGenerator().catch((e) => {
+      console.error(e);
+    });
+  }
+
+  async initiateLeaderboardGenerator(): Promise<void> {
+    setTimeout(() => {
+      this.generateLeaderboard().catch((e) => {
+        console.error(e);
+      });
+      setInterval(this.generateLeaderboard, LEADERBOARD_UPDATE_PERIOD);
+    }, 10000);
   }
 
   async createRun(req: Request, res: Response): Promise<Response> {
@@ -192,7 +209,7 @@ export class RunsService {
         return res.status(404).json({ message: 'Run not found' });
       }
 
-      await this.generateLeaderboard(run);
+      // await this.generateLeaderboard(run);
       run.tasks = await this.getTasksForRun(run);
 
       const participations = await AppDataSource.manager.find(Participation, {
@@ -220,63 +237,56 @@ export class RunsService {
     }
   };
 
-  generateLeaderboard = async (run: Run): Promise<undefined> => {
+  generateLeaderboard = async (): Promise<undefined> => {
     const runTasks = {};
+    // const now = new Date();
 
-    const lastUpdatedDate = run.leaderboardUpdatedDate;
-    const now = new Date();
+    console.log('hello');
 
-    const isCurrentRun = run.run_end_date.getTime() - now.getTime() > 0;
-    const isNotRelevant =
-      !lastUpdatedDate ||
-      now.getTime() - lastUpdatedDate.getTime() > LEADERBOARD_UPDATE_PERIOD;
+    // const currentRun = await AppDataSource.manager.findOne(Run, {
+    //   where: {
+    //     run_start_date: LessThan(now),
+    //     run_end_date: MoreThan(now),
+    //   },
+    // });
 
-    const shouldUpdateLeaderboard = isNotRelevant && isCurrentRun;
+    const runs = await AppDataSource.manager.find(Run);
 
-    if (!shouldUpdateLeaderboard) {
-      return;
+    for (const currentRun of runs) {
+      if (!currentRun) {
+        console.error('No run to generate a leaderboard');
+        return;
+      }
+
+      console.log(currentRun, `Updating leaderboard of RUN ${currentRun?.id}`);
+
+      // find tasks which belongs to run
+      currentRun.tasks = await this.getTasksForRun(currentRun);
+      currentRun.tasks.forEach((task) => (runTasks[task.id] = task));
+
+      // get all the users
+      const users = await AppDataSource.manager.find(User);
+
+      for (const user of users) {
+        try {
+          await this.participationsService.updateUserParticipationData(
+            currentRun,
+            user,
+          );
+          console.log(
+            `Updated data of user ${user.firstName}: ${user.codewarsUsername}`,
+          );
+          await timeout(1000);
+        } catch (e) {
+          console.error(
+            `Didn't update data of user ${user.firstName}: ${user.codewarsUsername}`,
+          );
+        }
+      }
+
+      // update leaderboardUpdatedDate
+      currentRun.leaderboardUpdatedDate = new Date();
+      await AppDataSource.manager.save(Run, currentRun);
     }
-
-    // find tasks which belongs to run
-    run.tasks = await this.getTasksForRun(run);
-    run.tasks.forEach((task) => (runTasks[task.id] = task));
-
-    // get all the users
-    const users = await AppDataSource.manager.find(User);
-
-    for (const user of users) {
-      await this.participationsService.updateUserParticipationData(run, user);
-    }
-
-    // mark fastest solutions
-    await this.markFastestSolutions(run);
-
-    // update leaderboardUpdatedDate
-    run.leaderboardUpdatedDate = new Date();
-    await AppDataSource.manager.save(Run, run);
-  };
-
-  markFastestSolutions = async (run: Run): Promise<undefined> => {
-    await Promise.all(
-      run.tasks.map(async (task) => {
-        const solutions = await this.getSolutionsForTask(task, run);
-
-        if (!solutions.length) return;
-
-        const fastestSolution = solutions.find(
-          (solution) => solution.fastestSolution,
-        );
-
-        if (fastestSolution) return;
-
-        solutions.sort(
-          (solutionA, solutionB) =>
-            solutionA.completedAt.getTime() - solutionB.completedAt.getTime(),
-        );
-
-        solutions[0].fastestSolution = true;
-        await AppDataSource.manager.save(Solution, solutions[0]);
-      }),
-    );
   };
 }

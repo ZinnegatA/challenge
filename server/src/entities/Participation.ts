@@ -8,7 +8,6 @@ import {
 import { User } from './User';
 import { Solution } from './Solution';
 import { Run } from './Run';
-import { FASTEST_SOLUTION_BONUS } from '../utils/leaderboard.helper';
 
 @Entity()
 export class Participation {
@@ -30,9 +29,6 @@ export class Participation {
   setTotalPoints(): void {
     if (this.solutions) {
       this.totalPoints = this.solutions.reduce((points, sol) => {
-        if (sol.fastestSolution) {
-          return points + sol.points + FASTEST_SOLUTION_BONUS;
-        }
         return points + sol.points;
       }, 0);
     }

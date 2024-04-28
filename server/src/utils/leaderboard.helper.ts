@@ -29,7 +29,6 @@ interface UserWithMappedSolutions
 
 export interface Leaderboard {
   leaderboardUpdatedDate: Date;
-  fastestSolutionBonus: number;
   users: UserWithMappedSolutions[];
 }
 
@@ -62,21 +61,22 @@ export const generateLeaderboardResponse = (
   participations: Participation[],
   run: Run,
 ): Leaderboard => {
+  const users = participations.map((participation) => ({
+    firstName: participation.user.firstName,
+    lastName: participation.user.lastName,
+    photo: participation.user.photo,
+    telescopeLink: participation.user.telescopeLink,
+    codewarsUsername: participation.user.codewarsUsername,
+    solutions: buildSolutionsObject(
+      run.tasks,
+      participation.solutions,
+      participation.user.totalPoints,
+      participation.totalPoints,
+    ),
+  }));
+
   return {
     leaderboardUpdatedDate: run.leaderboardUpdatedDate,
-    fastestSolutionBonus: FASTEST_SOLUTION_BONUS,
-    users: participations.map((participation) => ({
-      firstName: participation.user.firstName,
-      lastName: participation.user.lastName,
-      photo: participation.user.photo,
-      telescopeLink: participation.user.telescopeLink,
-      codewarsUsername: participation.user.codewarsUsername,
-      solutions: buildSolutionsObject(
-        run.tasks,
-        participation.solutions,
-        participation.user.totalPoints,
-        participation.totalPoints,
-      ),
-    })),
+    users: users.filter((user) => user.solutions.points > 0),
   };
 };
