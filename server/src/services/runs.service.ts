@@ -10,7 +10,7 @@ import { And, LessThan, MoreThan } from 'typeorm';
 import ParticipationsService from './participations.service';
 import { Participation } from '../entities/Participation';
 
-const LEADERBOARD_UPDATE_PERIOD = 60 * 60 * 1000; // 1 hour
+const LEADERBOARD_UPDATE_PERIOD = 20 * 60 * 1000; // 20 mins
 
 const timeout = async (ms: number): Promise<NodeJS.Timeout> => {
   return await new Promise((resolve) => setTimeout(resolve, ms));
